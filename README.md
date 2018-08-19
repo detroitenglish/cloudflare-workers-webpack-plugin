@@ -55,7 +55,12 @@ All configuration settings are `undefined` by default:
 Note that providing a pattern will disable any currently enabled pattern, and activate the new pattern provided.
 
 
-# Caveats
+# Potential Issues
+
+Note this is currently tagged as `beta`. I initially hacked this together in one evening, which sounds cool when good programmers say it.
+But I am by no means a good programmer. Cool is kind of a stretch as well.
+
+I don't tend to support the fancy-pants Enterprise Cloudflare Workers features anytime soon. Mucho dinero - eyeyey...!
 
 
 # Contributing
