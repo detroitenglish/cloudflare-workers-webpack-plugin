@@ -1,0 +1,13 @@
+.lock-wscript
+.gitignore
+.svn/
+.hg/
+.git/
+CVS/
+*~
+*.bak
+node_modules/
+npm-debug.log
+yarn.lock
+.vscode
+yarn-error.log

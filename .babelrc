@@ -1,0 +1,17 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "usage",
+        "loose": true,
+        "modules": "commonjs",
+        "targets": {
+          "node": "8",
+        },
+        "debug": true,
+      }
+    ]
+  ],
+  "plugins": ["closure-elimination"]
+}
