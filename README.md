@@ -29,6 +29,7 @@ plugins: [
     {                               // options object
       zone: `omgwtfroflbbq-zone-id`,
       pattern: `*.your-site.lol/crazy/*/pattern`
+      enabled: true,
     }
   ),
 
