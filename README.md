@@ -43,8 +43,8 @@ All configuration settings are `undefined` by default:
 
 ## Authorization
 
-* `CLOUDFLARE_AUTH_EMAIL`: Your Cloudflare user email.
-* `CLOUDFLARE_AUTH_KEY`: Your Cloudflare super-duper-secret API key.
+* `$CLOUDFLARE_AUTH_EMAIL`: Your Cloudflare user email.
+* `$CLOUDFLARE_AUTH_KEY`: Your Cloudflare super-duper-secret API key.
 
 
 ## Deployment Settings
