@@ -13,11 +13,11 @@
   ],
   "homepage": "https://github.com/detroitenglish/cloudflare-worker-webpack-plugin",
   "scripts": {
-    "lint": "./node_modules/.bin/eslint lib index.js",
-    "precommit": "lint",
+    "lint": "./node_modules/.bin/eslint src",
+    "pre-commit": "lint",
     "clean": "rm -fr ./dist/*",
     "bundle": "babel src -d dist",
-    "build": "npm-run-all -s clean bundle"
+    "build": "npm-run-all -s lint clean bundle"
   },
   "dependencies": {
     "axios": "^0.18.0"

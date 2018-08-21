@@ -7,7 +7,7 @@
         "loose": true,
         "modules": "commonjs",
         "targets": {
-          "node": "8",
+          "node": "6",
         },
         "debug": true,
       }

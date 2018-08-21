@@ -3,6 +3,8 @@
 exports.__esModule = true;
 exports.default = _default;
 
+require("core-js/modules/es6.promise");
+
 var _axios = _interopRequireDefault(require("axios"));
 
 var _cfRouteEndpoints = _interopRequireDefault(require("./cf-route-endpoints"));

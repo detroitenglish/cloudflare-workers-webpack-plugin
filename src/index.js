@@ -1,6 +1,6 @@
 import cfMethods from './lib'
 
-class CloudflareWorkerPlugin {
+export default class CloudflareWorkerPlugin {
   constructor(authEmail, authKey, { zone, pattern }) {
     this._pattern = pattern
     this._cfMethods = { ...cfMethods(authEmail, authKey, zone) }
@@ -35,5 +35,3 @@ class CloudflareWorkerPlugin {
     )
   }
 }
-
-module.exports = CloudflareWorkerPlugin
