@@ -17,6 +17,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 class CloudflareWorkerPlugin {
   constructor(authEmail = null, authKey = null, {
     zone = null,
+    enabled = true,
     pattern
   }) {
     const requiredParams = {
@@ -43,8 +44,9 @@ class CloudflareWorkerPlugin {
       throw new Error(`'pattern' must be a string.`.red);
     }
 
+    this._enabled = !!enabled;
     this._pattern = pattern;
-    this._cfMethods = Object.assign({}, (0, _lib.default)(authEmail, authKey, zone));
+    this._cfMethods = enabled ? Object.assign({}, (0, _lib.default)(authEmail, authKey, zone)) : {};
   }
 
   disableExistingRoutes() {
@@ -86,6 +88,8 @@ class CloudflareWorkerPlugin {
     var _this3 = this;
 
     function* _ref5(compilation) {
+      if (!_this3._enabled) return console.info(`Cloudflare deployment disabled.`.yellow);
+
       try {
         const filename = compilation.outputOptions.filename;
         const workerScript = compilation.assets[filename].source();
