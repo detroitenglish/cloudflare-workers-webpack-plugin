@@ -5,12 +5,12 @@ Deploy freshly-bundled Cloudflare Worker scripts and route matching patterns **d
 
 # Usage
 
-Install the plugin:
+Install, ...
 ````bash
-npm install -d cloudflare-worker-webpack-plugin
+npm install -D cloudflare-worker-webpack-plugin
 ````
 
-Require...
+... require...
 
 ````javascript
 const CloudflareWorkerPlugin = require('cloudflare-worker-webpack-plugin');
@@ -60,7 +60,7 @@ Note that providing a pattern will disable any currently enabled pattern, and ac
 Note this is currently tagged as `beta`. I initially hacked this together in one evening, which sounds cool when good programmers say it.
 But I am by no means a good programmer. Cool is kind of a stretch as well.
 
-I don't tend to support the fancy-pants Enterprise Cloudflare Workers features anytime soon. Mucho dinero - eyeyey...!
+I don't plan on supporting the fancy-pants Enterprise Cloudflare Workers features anytime soon - mucho dinero! (eyeyey...)
 
 
 # Contributing
@@ -75,7 +75,13 @@ Great! Here are some fun ideas to consider:
 
 Feel free to create an issue throwing your own ideas at me.
 
-# Because All Cool Kids Do It
+# Because All the Cool Kids Do It
+
+[![cloudflare](https://www.cloudflare.com/media/images/web-badges/cf-web-badges-g-gray.png)](https://developers.cloudflare.com/workers/)
+
+
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier) [![npm version](https://badge.fury.io/js/cloudflare-worker-webpack-plugin.svg)](https://badge.fury.io/js/cloudflare-worker-webpack-plugin)
+
 
 ## Disclaimer
 Besides being a happy customer, I am not affiliated with Cloudflare in any way.
