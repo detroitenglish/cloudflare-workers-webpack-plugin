@@ -1,7 +1,21 @@
+import 'colors'
 import cfMethods from './lib'
 
-export default class CloudflareWorkerPlugin {
-  constructor(authEmail, authKey, { zone, pattern }) {
+class CloudflareWorkerPlugin {
+  constructor(authEmail = null, authKey = null, { zone = null, pattern }) {
+    const requiredParams = {
+      'CF-Account-Email': authEmail,
+      'CF-API-Key': authKey,
+      zone,
+    }
+    for (let [key, value] of Object.entries(requiredParams)) {
+      if (typeof value !== 'string') {
+        throw new Error(`'${key}' either missing, or not a string`.red)
+      }
+    }
+    if ({ pattern }.hasOwnProperty('pattern') && typeof pattern !== 'string') {
+      throw new Error(`'pattern' must be a string.`.red)
+    }
     this._pattern = pattern
     this._cfMethods = { ...cfMethods(authEmail, authKey, zone) }
   }
@@ -25,13 +39,20 @@ export default class CloudflareWorkerPlugin {
     return compiler.hooks.emit.tapPromise(
       'CloudflareWorkerPlugin',
       async compilation => {
-        const { filename } = compilation.outputOptions
-        const workerScript = compilation.assets[filename].source()
-        if (this._pattern) {
-          await this.upsertNewPattern()
+        try {
+          const { filename } = compilation.outputOptions
+          const workerScript = compilation.assets[filename].source()
+          if (this._pattern) {
+            await this.upsertNewPattern()
+          }
+          return this._cfMethods.uploadWorker(Buffer.from(workerScript))
+        } catch (err) {
+          console.error(`${err.message}`.red)
+          throw err
         }
-        return this._cfMethods.uploadWorker(Buffer.from(workerScript))
       }
     )
   }
 }
+
+module.exports = CloudflareWorkerPlugin
