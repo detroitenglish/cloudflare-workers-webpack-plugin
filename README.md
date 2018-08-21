@@ -38,7 +38,7 @@ plugins: [
 
 # Configuration
 
-All configuration settings are `undefined` by default:
+Unless otherwise indicated, all configuration settings are `undefined` by default:
 
 
 ## Authorization
@@ -49,6 +49,7 @@ All configuration settings are `undefined` by default:
 
 ## Deployment Settings
 
+* `enabled`: Whether to deploy to Cloudflare or bypass; useful for e.g. CI and testing (default: `true`)
 * `zone`: the ID of the zone/domain/website for which you're deploying your script (required!).
 * `pattern`: optionally include a route matching pattern for unleashing your newly spawned JavaScript minion
 

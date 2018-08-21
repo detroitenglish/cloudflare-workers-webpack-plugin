@@ -2,7 +2,11 @@ import 'colors'
 import cfMethods from './lib'
 
 class CloudflareWorkerPlugin {
-  constructor(authEmail = null, authKey = null, { zone = null, pattern }) {
+  constructor(
+    authEmail = null,
+    authKey = null,
+    { zone = null, enabled = true, pattern }
+  ) {
     const requiredParams = {
       'CF-Account-Email': authEmail,
       'CF-API-Key': authKey,
@@ -16,8 +20,9 @@ class CloudflareWorkerPlugin {
     if ({ pattern }.hasOwnProperty('pattern') && typeof pattern !== 'string') {
       throw new Error(`'pattern' must be a string.`.red)
     }
+    this._enabled = !!enabled
     this._pattern = pattern
-    this._cfMethods = { ...cfMethods(authEmail, authKey, zone) }
+    this._cfMethods = enabled ? { ...cfMethods(authEmail, authKey, zone) } : {}
   }
 
   async disableExistingRoutes() {
@@ -39,6 +44,8 @@ class CloudflareWorkerPlugin {
     return compiler.hooks.emit.tapPromise(
       'CloudflareWorkerPlugin',
       async compilation => {
+        if (!this._enabled)
+          return console.info(`Cloudflare deployment disabled.`.yellow)
         try {
           const { filename } = compilation.outputOptions
           const workerScript = compilation.assets[filename].source()
