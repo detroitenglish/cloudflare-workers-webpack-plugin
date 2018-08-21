@@ -16,13 +16,12 @@ class CloudflareWorkerPlugin {
   async disableExistingRoutes() {
     let {
       result
-    } = await this._cfMethods.getRoutes(); // shart({ result })
-
+    } = await this._cfMethods.getRoutes();
     const matchingResult = result.find(r => r.pattern === this._pattern);
 
     if (matchingResult) {
       await this._cfMethods.deleteRoute(matchingResult);
-      result = result.filter(r => r.pattern === this._pattern);
+      result = result.filter(r => r.pattern !== this._pattern);
     }
 
     await Promise.all(result.map(this._cfMethods.disableRoute));
