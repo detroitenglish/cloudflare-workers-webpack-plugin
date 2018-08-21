@@ -14,8 +14,8 @@
   "homepage": "https://github.com/detroitenglish/cloudflare-worker-webpack-plugin",
   "scripts": {
     "lint": "./node_modules/.bin/eslint src",
-    "precommit": "lint",
-    "clean": "rm -fr ./dist/*",
+    "precommit": "npm run lint",
+    "clean": "del-cli dist/*",
     "bundle": "babel src -d dist",
     "build": "npm-run-all -s lint clean bundle"
   },
@@ -30,8 +30,8 @@
     "@babel/polyfill": "^7.0.0-rc.1",
     "@babel/preset-env": "^7.0.0-rc.1",
     "babel-eslint": "^8.2.6",
-    "babel-loader": "^8.0.0-beta",
     "babel-plugin-closure-elimination": "^1.3.0",
+    "del-cli": "^1.1.0",
     "eslint": "^5.3.0",
     "eslint-config-prettier": "^3.0.1",
     "eslint-plugin-babel": "^5.1.0",
