@@ -3,7 +3,7 @@
 exports.__esModule = true;
 exports.default = _default;
 
-require("core-js/modules/es6.promise");
+require("colors");
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -17,13 +17,16 @@ function _ref(response) {
   return response.data;
 }
 
-function _ref2(err) {
-  const status = err.status || err.response.status;
-  if (status === 409) return {
-    ok: false
-  };
-  console.error(err.response.data || err.message);
-  Promise.reject(err);
+function _ref2(error) {
+  return console.error(`[code ${error.code}]: ${error.message}`.red);
+}
+
+function _ref3(err) {
+  var _err$response;
+
+  const errors = err === null || err === void 0 ? void 0 : (_err$response = err.response) === null || _err$response === void 0 ? void 0 : _err$response.data.errors;
+  if (errors && Array.isArray(errors)) errors.forEach(_ref2);
+  throw err;
 }
 
 function _default(cfMail, cfKey, zoneId) {
@@ -35,8 +38,6 @@ function _default(cfMail, cfKey, zoneId) {
     }
   });
 
-  instance.interceptors.response.use(_ref, _ref2);
-  const routeFunctions = (0, _cfRouteEndpoints.default)(instance);
-  const workerFunctions = (0, _cfWorkerEndpoints.default)(instance);
-  return Object.assign(routeFunctions, workerFunctions);
+  instance.interceptors.response.use(_ref, _ref3);
+  return Object.assign({}, (0, _cfRouteEndpoints.default)(instance), (0, _cfWorkerEndpoints.default)(instance));
 }

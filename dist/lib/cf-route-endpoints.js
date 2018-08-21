@@ -5,6 +5,8 @@ exports.default = _default;
 
 require("core-js/modules/es6.promise");
 
+require("colors");
+
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -22,7 +24,7 @@ function _default(ax) {
   }
 
   function* _ref(pattern, enabled = true) {
-    const result = yield ax({
+    yield ax({
       url: `/workers/filters`,
       method: 'POST',
       headers: {
@@ -33,7 +35,7 @@ function _default(ax) {
         enabled
       }
     });
-    return result;
+    return console.log(`Enabled new route pattern: ${pattern}`.green);
   }
 
   function _createRoute() {
@@ -46,11 +48,10 @@ function _default(ax) {
   }
 
   function* _ref2() {
-    const result = yield ax({
+    return yield ax({
       url: `/workers/filters`,
       method: 'GET'
     });
-    return result;
   }
 
   function _getRoutes() {
@@ -68,7 +69,7 @@ function _default(ax) {
     id
   }) {
     if (!enabled) return;
-    const result = yield ax({
+    yield ax({
       url: `/workers/filters/${id}`,
       method: 'PUT',
       headers: {
@@ -79,7 +80,7 @@ function _default(ax) {
         enabled: false
       }
     });
-    return result;
+    return console.info(`Disabled route pattern: ${pattern}`.yellow);
   }
 
   function _disableRoute() {
@@ -94,11 +95,10 @@ function _default(ax) {
   function* _ref4({
     id
   }) {
-    const result = yield ax({
+    yield ax({
       url: `/workers/filters/${id}`,
       method: 'DELETE'
     });
-    return result;
   }
 
   function _deleteRoute() {

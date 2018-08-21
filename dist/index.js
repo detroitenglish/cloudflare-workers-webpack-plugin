@@ -1,9 +1,10 @@
 "use strict";
 
-exports.__esModule = true;
-exports.default = void 0;
-
 require("core-js/modules/es6.promise");
+
+require("core-js/modules/es7.object.entries");
+
+require("colors");
 
 var _lib = _interopRequireDefault(require("./lib"));
 
@@ -14,10 +15,34 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
 class CloudflareWorkerPlugin {
-  constructor(authEmail, authKey, {
-    zone,
+  constructor(authEmail = null, authKey = null, {
+    zone = null,
     pattern
   }) {
+    const requiredParams = {
+      'CF-Account-Email': authEmail,
+      'CF-API-Key': authKey,
+      zone
+    };
+
+    var _arr = Object.entries(requiredParams);
+
+    for (var _i = 0; _i < _arr.length; _i++) {
+      let _arr$_i = _arr[_i],
+          key = _arr$_i[0],
+          value = _arr$_i[1];
+
+      if (typeof value !== 'string') {
+        throw new Error(`'${key}' either missing, or not a string`.red);
+      }
+    }
+
+    if ({
+      pattern
+    }.hasOwnProperty('pattern') && typeof pattern !== 'string') {
+      throw new Error(`'pattern' must be a string.`.red);
+    }
+
     this._pattern = pattern;
     this._cfMethods = Object.assign({}, (0, _lib.default)(authEmail, authKey, zone));
   }
@@ -61,14 +86,19 @@ class CloudflareWorkerPlugin {
     var _this3 = this;
 
     function* _ref5(compilation) {
-      const filename = compilation.outputOptions.filename;
-      const workerScript = compilation.assets[filename].source();
+      try {
+        const filename = compilation.outputOptions.filename;
+        const workerScript = compilation.assets[filename].source();
 
-      if (_this3._pattern) {
-        yield _this3.upsertNewPattern();
+        if (_this3._pattern) {
+          yield _this3.upsertNewPattern();
+        }
+
+        return _this3._cfMethods.uploadWorker(Buffer.from(workerScript));
+      } catch (err) {
+        console.error(`${err.message}`.red);
+        throw err;
       }
-
-      return _this3._cfMethods.uploadWorker(Buffer.from(workerScript));
     }
 
     return compiler.hooks.emit.tapPromise('CloudflareWorkerPlugin',
@@ -84,4 +114,4 @@ class CloudflareWorkerPlugin {
 
 }
 
-exports.default = CloudflareWorkerPlugin;
+module.exports = CloudflareWorkerPlugin;
