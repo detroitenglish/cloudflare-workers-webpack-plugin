@@ -13,5 +13,5 @@
       }
     ]
   ],
-  "plugins": ["closure-elimination"]
+  "plugins": ["closure-elimination", "@babel/plugin-proposal-optional-chaining"]
 }
