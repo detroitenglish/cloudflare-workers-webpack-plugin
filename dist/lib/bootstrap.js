@@ -1,7 +1,10 @@
 "use strict";
 
 exports.__esModule = true;
-exports.default = _default;
+exports.cfMethods = cfMethods;
+exports.validateConfig = validateConfig;
+
+require("core-js/modules/es7.object.entries");
 
 require("colors");
 
@@ -22,7 +25,7 @@ function _ref2(err) {
   throw err;
 }
 
-function _default(cfMail, cfKey, zoneId) {
+function cfMethods(cfMail, cfKey, zoneId) {
   const instance = _axios.default.create({
     baseURL: `https://api.cloudflare.com/client/v4/zones/${zoneId}`,
     headers: {
@@ -49,5 +52,47 @@ function printError(err) {
     errors.forEach(_ref3);
   } else {
     console.error(err);
+  }
+}
+
+function _ref4(p) {
+  return typeof p === 'string';
+}
+
+function validateConfig([authEmail, authKey, {
+  zone,
+  script,
+  pattern
+}]) {
+  const requiredConfig = {
+    'CF-Account-Email': authEmail,
+    'CF-API-Key': authKey,
+    zone
+  };
+
+  var _arr = Object.entries(requiredConfig);
+
+  for (var _i = 0; _i < _arr.length; _i++) {
+    let _arr$_i = _arr[_i],
+        key = _arr$_i[0],
+        value = _arr$_i[1];
+
+    if (!value) {
+      throw new Error(`'${key}' is undefined`);
+    }
+
+    if (typeof value !== 'string') {
+      throw new Error(`'${key}' is not a string`);
+    }
+  }
+
+  if (script && typeof script !== 'string') throw new Error(`'script' is not a string`);
+
+  if (pattern) {
+    if (Array.isArray(pattern) && !pattern.every(_ref4)) {
+      throw new Error(`'pattern' must be a string or array of strings`);
+    } else if (typeof pattern !== 'string') {
+      throw new Error(`'pattern' must be a string or array of strings`);
+    }
   }
 }

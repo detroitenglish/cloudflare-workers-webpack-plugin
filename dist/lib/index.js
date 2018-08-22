@@ -1,11 +1,9 @@
 "use strict";
 
 exports.__esModule = true;
-exports.default = void 0;
+exports.validateConfig = exports.cfMethods = void 0;
 
-var _bootstrap = _interopRequireDefault(require("./bootstrap"));
+var _bootstrap = require("./bootstrap");
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var _default = _bootstrap.default;
-exports.default = _default;
+exports.cfMethods = _bootstrap.cfMethods;
+exports.validateConfig = _bootstrap.validateConfig;
