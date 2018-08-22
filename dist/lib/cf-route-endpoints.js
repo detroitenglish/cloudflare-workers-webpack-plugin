@@ -15,6 +15,7 @@ function _default(ax) {
   return {
     createRoute,
     getRoutes,
+    enableRoute,
     disableRoute,
     deleteRoute
   };
@@ -80,7 +81,7 @@ function _default(ax) {
         enabled: false
       }
     });
-    return console.info(`Disabled route pattern: ${pattern}`.yellow);
+    return pattern;
   }
 
   function _disableRoute() {
@@ -88,21 +89,52 @@ function _default(ax) {
     return _disableRoute.apply(this, arguments);
   }
 
-  function deleteRoute(_x3) {
-    return _deleteRoute.apply(this, arguments);
+  function enableRoute(_x3) {
+    return _enableRoute.apply(this, arguments);
   }
 
   function* _ref4({
+    pattern,
+    enabled,
     id
+  }) {
+    if (enabled) return;
+    yield ax({
+      url: `/workers/filters/${id}`,
+      method: 'PUT',
+      headers: {
+        'content-type': 'application/json'
+      },
+      data: {
+        pattern,
+        enabled: true
+      }
+    });
+    return pattern;
+  }
+
+  function _enableRoute() {
+    _enableRoute = _asyncToGenerator(_ref4);
+    return _enableRoute.apply(this, arguments);
+  }
+
+  function deleteRoute(_x4) {
+    return _deleteRoute.apply(this, arguments);
+  }
+
+  function* _ref5({
+    id,
+    pattern
   }) {
     yield ax({
       url: `/workers/filters/${id}`,
       method: 'DELETE'
     });
+    return pattern;
   }
 
   function _deleteRoute() {
-    _deleteRoute = _asyncToGenerator(_ref4);
+    _deleteRoute = _asyncToGenerator(_ref5);
     return _deleteRoute.apply(this, arguments);
   }
 }

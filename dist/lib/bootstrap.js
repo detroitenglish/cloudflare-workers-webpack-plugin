@@ -18,14 +18,20 @@ function _ref(response) {
 }
 
 function _ref2(error) {
-  return console.error(`[code ${error.code}]: ${error.message}`.red);
+  if (error.message) console.error(`[code ${error.code}]: ${error.message}`.red);else console.error(`${JSON.stringify(error, null, 2)}`.red);
 }
 
 function _ref3(err) {
   var _err$response;
 
   const errors = err === null || err === void 0 ? void 0 : (_err$response = err.response) === null || _err$response === void 0 ? void 0 : _err$response.data.errors;
-  if (errors && Array.isArray(errors)) errors.forEach(_ref2);
+
+  if (errors && Array.isArray(errors)) {
+    errors.forEach(_ref2);
+  } else {
+    console.error(err);
+  }
+
   throw err;
 }
 
@@ -35,7 +41,8 @@ function _default(cfMail, cfKey, zoneId) {
     headers: {
       'X-Auth-Email': cfMail,
       'X-Auth-Key': cfKey
-    }
+    },
+    timeout: 2e4
   });
 
   instance.interceptors.response.use(_ref, _ref3);

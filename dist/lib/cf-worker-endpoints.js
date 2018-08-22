@@ -18,21 +18,7 @@ function _default(ax) {
 
   function uploadWorker(_x) {
     return _uploadWorker.apply(this, arguments);
-  } // async function downloadWorker() {
-  //   const result = await ax({
-  //     url: `/workers/script`,
-  //     method: 'GET',
-  //   })
-  //   return result
-  // }
-  // async function deleteWorker() {
-  //   const result = await ax({
-  //     url: `/workers/script`,
-  //     method: 'DELETE',
-  //   })
-  //   return result
-  // }
-
+  }
 
   function* _ref(data) {
     const scriptSize = `${Math.floor(data.byteLength / 1024)}`;
