@@ -7,11 +7,15 @@
         "loose": true,
         "modules": "commonjs",
         "targets": {
-          "node": "6",
+          "node": "6"
         },
-        "debug": true,
+        "debug": true
       }
     ]
   ],
-  "plugins": ["closure-elimination", "@babel/plugin-proposal-optional-chaining"]
+  "plugins": [
+    "closure-elimination",
+    "@babel/plugin-proposal-optional-chaining",
+    "@babel/plugin-proposal-export-default-from"
+  ]
 }
