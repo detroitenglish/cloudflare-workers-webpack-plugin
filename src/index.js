@@ -1,5 +1,5 @@
 import 'colors'
-import cfMethods from './lib'
+import { cfMethods, validateConfig } from './lib'
 import fs from 'fs'
 import path from 'path'
 
@@ -17,24 +17,8 @@ class CloudflareWorkerPlugin {
       skipWorkerUpload,
     }
   ) {
-    const requiredConfig = {
-      'CF-Account-Email': authEmail,
-      'CF-API-Key': authKey,
-      zone,
-    }
-    for (let [key, value] of Object.entries(requiredConfig)) {
-      if (!value) {
-        throw new Error(`'${key}' is undefined`)
-      }
-      if (typeof value !== 'string') {
-        throw new Error(`'${key}' is not a string`)
-      }
-    }
-    // for (let [key, value] of Object.entries({ script, pattern })) {
-    //   if (value && typeof value !== 'string') {
-    //     throw new Error(`'${key}' must be a string`)
-    //   }
-    // }
+    validateConfig(arguments)
+
     this._enabled = !!enabled
     this._clearRoutes = !!clearRoutes
     this._verbose = !!verbose
@@ -54,7 +38,7 @@ class CloudflareWorkerPlugin {
     this._cfMethods = { ...cfMethods(authEmail, authKey, zone) }
   }
 
-  logg(stuff, color = `cyan`) {
+  _logg(stuff, color = `cyan`) {
     if (!this._verbose) return void 0
 
     return typeof stuff === 'object'
@@ -62,9 +46,9 @@ class CloudflareWorkerPlugin {
       : console.info(`${stuff}`[color])
   }
 
-  async clearAllExistingRoutes() {
+  async _clearAllExistingRoutes() {
     if (!this._existingRoutes.length) return
-    this.logg(
+    this._logg(
       `Deleting all routes: ${this._existingRoutes
         .map(r => r.pattern)
         .join(', ')}`
@@ -74,40 +58,39 @@ class CloudflareWorkerPlugin {
     ).then(results => {
       results
         .filter(r => r.ok)
-        .forEach(r => this.logg(`Deleted pattern: ${r.pattern}`.yellow))
+        .forEach(r => this._logg(`Deleted pattern: ${r.pattern}`.yellow))
       results
         .filter(r => !r.ok)
-        .forEach(r => this.logg(`Pattern deletion failed: ${r.pattern}`.red))
+        .forEach(r => this._logg(`Pattern deletion failed: ${r.pattern}`.red))
     })
     return true
   }
 
-  async disableRemainingRoutes() {
+  async _disableRemainingRoutes() {
     const disabledRoutes = await Promise.all(
       this._existingRoutes.map(this._cfMethods.disableRoute)
     )
     disabledRoutes
       .filter(r => r.ok)
-      .forEach(r => this.logg(`Disabled route pattern: ${r.pattern}`.yellow))
+      .forEach(r => this._logg(`Disabled route pattern: ${r.pattern}`.yellow))
     disabledRoutes
       .filter(r => !r.ok)
       .forEach(r =>
-        this.logg(`Failed to disabled route pattern: ${r.pattern}`.red)
+        this._logg(`Failed to disabled route pattern: ${r.pattern}`.red)
       )
   }
 
-  async processRoutes() {
+  async _processRoutes() {
     let newRoutes = []
+    // bind the context for Array.map()
     const existingHandler = enableExistingMatchingRoute.bind(this)
 
     let { result: existingRoutes } = await this._cfMethods.getRoutes()
-    this.logg({ existingRoutes })
 
     this._existingRoutes.push(...existingRoutes)
-    this.logg({ existing: this._existingRoutes })
 
     if (this._clearRoutes) {
-      await this.clearAllExistingRoutes(this._existingRoutes)
+      await this._clearAllExistingRoutes(this._existingRoutes)
     }
 
     if (Array.isArray(this._pattern)) {
@@ -116,7 +99,7 @@ class CloudflareWorkerPlugin {
       newRoutes.push(await existingHandler(this._pattern))
     }
 
-    await this.disableRemainingRoutes(existingRoutes)
+    await this._disableRemainingRoutes(existingRoutes)
 
     return newRoutes.filter(Boolean)
 
@@ -128,12 +111,12 @@ class CloudflareWorkerPlugin {
       if (matchIndex > -1) {
         matchingRoute = this._existingRoutes.splice(matchIndex, 1).pop()
         if (matchingRoute.enabled) {
-          this.logg(
+          this._logg(
             `Pattern already enabled: ${matchingRoute.pattern}`,
             `green`
           )
         } else {
-          this.logg(
+          this._logg(
             `Re-enabling exiting pattern: ${matchingRoute.pattern}`,
             `green`
           )
@@ -151,8 +134,8 @@ class CloudflareWorkerPlugin {
     }
   }
 
-  async upsertPattern() {
-    const newRoutes = await this.processRoutes()
+  async _upsertPattern() {
+    const newRoutes = await this._processRoutes()
     if (!newRoutes.length) return
     await Promise.all(newRoutes.map(this._cfMethods.createRoute))
   }
@@ -173,7 +156,7 @@ class CloudflareWorkerPlugin {
               ? compilation.assets[filename].source()
               : fs.readFileSync(filename).toString()
 
-            this.logg(`Uploading worker...`, `green`)
+            this._logg(`Uploading worker...`, `green`)
 
             await this._cfMethods.uploadWorker(Buffer.from(code))
           } else {
@@ -181,7 +164,7 @@ class CloudflareWorkerPlugin {
           }
 
           if (this._pattern) {
-            await this.upsertPattern()
+            await this._upsertPattern()
           }
         } catch (err) {
           console.error(`${err.message}`.red)
