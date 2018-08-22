@@ -31,6 +31,7 @@ plugins: [
       pattern: `*.your-site.lol/crazy/*/pattern`
       enabled: true,
       script: `relative/path/to/script.js`,
+      skipWorkerUpload: false,
       clearRoutes: false,
       verbose: true,
     }
@@ -53,20 +54,23 @@ Unless otherwise indicated, all configuration settings are `undefined` by defaul
 
 ## Deployment Settings
 
-* `zone`: Required - the ID of the zone/domain/website for which you're deploying your script
-* `pattern`: Optional - a route matching pattern for your newly spawned JavaScript minion (default: `undefined`)
-* `script`: Optional - **relative** path to your worker script (default: `<webpack output file>`)
+* `zone`: required - the ID of the zone/domain/website for which you're deploying your script
+* `pattern`: optional - a route matching pattern, a comma-separated list of patterns, or an Array of patterns to enable for your newly spawned JavaScript minion (default: `undefined`)
+  - Example (string): `"*.your-site.lol/crazy/*/pattern"`
+  - Example (list): `"*.your-site.lol/crazy/*/pattern,your-site.lol/another/*/crazy/*/pattern"`
+  - Example (Array): `["*.your-site.lol/crazy/*/pattern", "your-site.lol/another/*/crazy/*/pattern"]`
+* `script`: optional - **relative** path to your worker script (default: `<webpack output file>`)
 * `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
+* `skipWorkerUpload`: Skip uploading the worker script and process only route patterns (default: `false`)
 * `verbose`: Log additional information about each deployment step to the console (default: `false`)
 * `enabled`: Whether to deploy to Cloudflare or bypass; useful for e.g. CI and testing (default: `true`)
 
-Note that providing a pattern will disable any currently enabled pattern, and activate the new pattern provided.
+**Note**: If you provide 1 or more matching patterns, any currectly enabled matching patterns will be disabled if they are not included in the `pattern` option.
 
 
 # Potential Issues
 
-Note this is currently tagged as `beta`. I initially hacked this together in one evening, which sounds cool when good programmers say it.
-But I am by no means a good programmer. Cool is kind of a stretch as well.
+Note this is currently tagged as `beta`. Treat it as such!
 
 I don't plan on supporting the fancy-pants Enterprise Cloudflare Workers features anytime soon - mucho dinero! (eyeyey...)
 
