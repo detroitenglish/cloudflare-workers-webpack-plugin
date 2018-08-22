@@ -30,6 +30,9 @@ plugins: [
       zone: `omgwtfroflbbq-zone-id`,
       pattern: `*.your-site.lol/crazy/*/pattern`
       enabled: true,
+      script: `relative/path/to/script.js`,
+      clearRoutes: false,
+      verbose: true,
     }
   ),
 
@@ -50,9 +53,12 @@ Unless otherwise indicated, all configuration settings are `undefined` by defaul
 
 ## Deployment Settings
 
+* `zone`: Required - the ID of the zone/domain/website for which you're deploying your script
+* `pattern`: Optional - a route matching pattern for your newly spawned JavaScript minion (default: `undefined`)
+* `script`: Optional - **relative** path to your worker script (default: `<webpack output file>`)
+* `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
+* `verbose`: Log additional information about each deployment step to the console (default: `false`)
 * `enabled`: Whether to deploy to Cloudflare or bypass; useful for e.g. CI and testing (default: `true`)
-* `zone`: the ID of the zone/domain/website for which you're deploying your script (required!).
-* `pattern`: optionally include a route matching pattern for unleashing your newly spawned JavaScript minion
 
 Note that providing a pattern will disable any currently enabled pattern, and activate the new pattern provided.
 
