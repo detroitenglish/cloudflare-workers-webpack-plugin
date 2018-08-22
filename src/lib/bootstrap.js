@@ -15,20 +15,23 @@ export default function(cfMail, cfKey, zoneId) {
   instance.interceptors.response.use(
     response => response.data,
     err => {
-      const errors = err?.response?.data.errors
-
-      if (errors && Array.isArray(errors)) {
-        errors.forEach(error => {
-          if (error.message)
-            console.error(`[code ${error.code}]: ${error.message}`.red)
-          else console.error(`${JSON.stringify(error, null, 2)}`.red)
-        })
-      } else {
-        console.error(err)
-      }
+      printError(err)
       throw err
     }
   )
 
   return { ...routeEndpoints(instance), ...workerEndpoints(instance) }
+}
+
+function printError(err) {
+  const errors = err?.response?.data.errors
+  if (errors && Array.isArray(errors)) {
+    errors.forEach(error => {
+      if (error.message)
+        console.error(`[code ${error.code}]: ${error.message}`.red)
+      else console.error(`${JSON.stringify(error, null, 2)}`.red)
+    })
+  } else {
+    console.error(err)
+  }
 }

@@ -2,14 +2,15 @@ import 'colors'
 export default function(ax) {
   return { createRoute, getRoutes, enableRoute, disableRoute, deleteRoute }
 
-  async function createRoute(pattern, enabled = true) {
+  async function createRoute(pattern) {
     await ax({
       url: `/workers/filters`,
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      data: { pattern, enabled },
-    })
-    return console.log(`Enabled new route pattern: ${pattern}`.green)
+      data: { pattern, enabled: true },
+    }).catch(() => ({ ok: false, pattern }))
+    console.log(`Enabled route pattern: ${pattern}`.green)
+    return { ok: true, pattern }
   }
 
   async function getRoutes() {
@@ -20,33 +21,33 @@ export default function(ax) {
   }
 
   async function disableRoute({ pattern, enabled, id }) {
-    if (!enabled) return
+    if (!enabled) return { ok: true, pattern }
     await ax({
       url: `/workers/filters/${id}`,
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
       data: { pattern, enabled: false },
-    })
-    return pattern
+    }).catch(() => ({ ok: false, pattern }))
+    return { ok: true, pattern }
   }
 
   async function enableRoute({ pattern, enabled, id }) {
-    if (enabled) return
+    if (enabled) return { ok: true, pattern }
     await ax({
       url: `/workers/filters/${id}`,
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
       data: { pattern, enabled: true },
-    })
+    }).catch(() => ({ ok: false, pattern }))
 
-    return pattern
+    return { ok: true, pattern }
   }
 
   async function deleteRoute({ id, pattern }) {
     await ax({
       url: `/workers/filters/${id}`,
       method: 'DELETE',
-    })
-    return pattern
+    }).catch(() => ({ ok: false, pattern }))
+    return { ok: true, pattern }
   }
 }
