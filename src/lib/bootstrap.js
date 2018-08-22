@@ -3,7 +3,7 @@ import axios from 'axios'
 import routeEndpoints from './cf-route-endpoints'
 import workerEndpoints from './cf-worker-endpoints'
 
-export default function(cfMail, cfKey, zoneId) {
+export function cfMethods(cfMail, cfKey, zoneId) {
   const instance = axios.create({
     baseURL: `https://api.cloudflare.com/client/v4/zones/${zoneId}`,
     headers: {
@@ -33,5 +33,36 @@ function printError(err) {
     })
   } else {
     console.error(err)
+  }
+}
+
+export function validateConfig([
+  authEmail,
+  authKey,
+  { zone, script, pattern },
+]) {
+  const requiredConfig = {
+    'CF-Account-Email': authEmail,
+    'CF-API-Key': authKey,
+    zone,
+  }
+  for (let [key, value] of Object.entries(requiredConfig)) {
+    if (!value) {
+      throw new Error(`'${key}' is undefined`)
+    }
+    if (typeof value !== 'string') {
+      throw new Error(`'${key}' is not a string`)
+    }
+  }
+
+  if (script && typeof script !== 'string')
+    throw new Error(`'script' is not a string`)
+
+  if (pattern) {
+    if (Array.isArray(pattern) && !pattern.every(p => typeof p === 'string')) {
+      throw new Error(`'pattern' must be a string or array of strings`)
+    } else if (typeof pattern !== 'string') {
+      throw new Error(`'pattern' must be a string or array of strings`)
+    }
   }
 }
