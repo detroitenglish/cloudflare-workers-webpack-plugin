@@ -1,6 +1,6 @@
 import 'colors'
 export default function(ax) {
-  return { createRoute, getRoutes, disableRoute, deleteRoute }
+  return { createRoute, getRoutes, enableRoute, disableRoute, deleteRoute }
 
   async function createRoute(pattern, enabled = true) {
     await ax({
@@ -27,14 +27,26 @@ export default function(ax) {
       headers: { 'content-type': 'application/json' },
       data: { pattern, enabled: false },
     })
-
-    return console.info(`Disabled route pattern: ${pattern}`.yellow)
+    return pattern
   }
 
-  async function deleteRoute({ id }) {
+  async function enableRoute({ pattern, enabled, id }) {
+    if (enabled) return
+    await ax({
+      url: `/workers/filters/${id}`,
+      method: 'PUT',
+      headers: { 'content-type': 'application/json' },
+      data: { pattern, enabled: true },
+    })
+
+    return pattern
+  }
+
+  async function deleteRoute({ id, pattern }) {
     await ax({
       url: `/workers/filters/${id}`,
       method: 'DELETE',
     })
+    return pattern
   }
 }
