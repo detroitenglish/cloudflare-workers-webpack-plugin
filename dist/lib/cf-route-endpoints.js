@@ -24,7 +24,7 @@ function _default(ax) {
     return _createRoute.apply(this, arguments);
   }
 
-  function* _ref(pattern, enabled = true) {
+  function* _ref(pattern) {
     yield ax({
       url: `/workers/filters`,
       method: 'POST',
@@ -33,10 +33,17 @@ function _default(ax) {
       },
       data: {
         pattern,
-        enabled
+        enabled: true
       }
-    });
-    return console.log(`Enabled new route pattern: ${pattern}`.green);
+    }).catch(() => ({
+      ok: false,
+      pattern
+    }));
+    console.log(`Enabled route pattern: ${pattern}`.green);
+    return {
+      ok: true,
+      pattern
+    };
   }
 
   function _createRoute() {
@@ -69,7 +76,10 @@ function _default(ax) {
     enabled,
     id
   }) {
-    if (!enabled) return;
+    if (!enabled) return {
+      ok: true,
+      pattern
+    };
     yield ax({
       url: `/workers/filters/${id}`,
       method: 'PUT',
@@ -80,8 +90,14 @@ function _default(ax) {
         pattern,
         enabled: false
       }
-    });
-    return pattern;
+    }).catch(() => ({
+      ok: false,
+      pattern
+    }));
+    return {
+      ok: true,
+      pattern
+    };
   }
 
   function _disableRoute() {
@@ -98,7 +114,10 @@ function _default(ax) {
     enabled,
     id
   }) {
-    if (enabled) return;
+    if (enabled) return {
+      ok: true,
+      pattern
+    };
     yield ax({
       url: `/workers/filters/${id}`,
       method: 'PUT',
@@ -109,8 +128,14 @@ function _default(ax) {
         pattern,
         enabled: true
       }
-    });
-    return pattern;
+    }).catch(() => ({
+      ok: false,
+      pattern
+    }));
+    return {
+      ok: true,
+      pattern
+    };
   }
 
   function _enableRoute() {
@@ -129,8 +154,14 @@ function _default(ax) {
     yield ax({
       url: `/workers/filters/${id}`,
       method: 'DELETE'
-    });
-    return pattern;
+    }).catch(() => ({
+      ok: false,
+      pattern
+    }));
+    return {
+      ok: true,
+      pattern
+    };
   }
 
   function _deleteRoute() {
