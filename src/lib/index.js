@@ -1,2 +1,1 @@
-import methods from './bootstrap'
-export default methods
+export { cfMethods, validateConfig } from './bootstrap'
