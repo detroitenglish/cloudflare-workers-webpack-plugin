@@ -65,7 +65,7 @@ Unless otherwise indicated, all configuration settings are `undefined` by defaul
 * `verbose`: Log additional information about each deployment step to the console (default: `false`)
 * `enabled`: Whether to deploy to Cloudflare or bypass; useful for e.g. CI and testing (default: `true`)
 
-**Note**: If you provide 1 or more matching patterns, any currectly enabled matching patterns will be disabled if they are not included in the `pattern` option.
+**Note**: If you provide 1 or more matching patterns, any currently enabled matching patterns will be disabled if they are not included in the `pattern` option.
 
 
 # Potential Issues
