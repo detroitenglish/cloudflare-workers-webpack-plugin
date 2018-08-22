@@ -29,10 +29,10 @@ plugins: [
     {                               // options object
       zone: `omgwtfroflbbq-zone-id`,
       pattern: `*.your-site.lol/crazy/*/pattern`
-      enabled: true,
       script: `relative/path/to/script.js`,
       skipWorkerUpload: false,
       clearRoutes: false,
+      enabled: true,
       verbose: true,
     }
   ),
@@ -43,23 +43,20 @@ plugins: [
 
 # Configuration
 
-Unless otherwise indicated, all configuration settings are `undefined` by default:
-
-
 ## Authorization
 
 * `$CLOUDFLARE_AUTH_EMAIL`: Your Cloudflare user email.
 * `$CLOUDFLARE_AUTH_KEY`: Your Cloudflare super-duper-secret API key.
 
 
-## Deployment Settings
+## Deployment Config
 
 * `zone`: required - the ID of the zone/domain/website for which you're deploying your script
 * `pattern`: optional - a route matching pattern, a comma-separated list of patterns, or an Array of patterns to enable for your newly spawned JavaScript minion (default: `undefined`)
   - Example (string): `"*.your-site.lol/crazy/*/pattern"`
   - Example (list): `"*.your-site.lol/crazy/*/pattern,your-site.lol/another/*/crazy/*/pattern"`
   - Example (Array): `["*.your-site.lol/crazy/*/pattern", "your-site.lol/another/*/crazy/*/pattern"]`
-* `script`: optional - **relative** path to your worker script (default: `<webpack output file>`)
+* `script`: optional - **relative** path to your worker script (default: `<webpack-config output file>`)
 * `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
 * `skipWorkerUpload`: Skip uploading the worker script and process only route patterns (default: `false`)
 * `verbose`: Log additional information about each deployment step to the console (default: `false`)
@@ -70,16 +67,14 @@ Unless otherwise indicated, all configuration settings are `undefined` by defaul
 
 # Potential Issues
 
-Note this is currently tagged as `beta`. Treat it as such!
+Note this is currently tagged as `beta`. That means I can change the API willy-nilly, so fair warning!
 
-I don't plan on supporting the fancy-pants Enterprise Cloudflare Workers features anytime soon - mucho dinero! (eyeyey...)
+I don't plan on supporting the fancy-pants Enterprise Cloudflare Workers features anytime soon - mucho dinero (eyeyey...)
 
 
 # Contributing
 
-Want to be the berserker of your own Cloudflare Worker? ⚔
-
-Great! Here are some fun ideas to consider:
+PR's are very much welcome. Here are some fun ideas to consider:
 
 - [ ] Write hella' cool automated tests
 - [ ] Replace `axios` dependency with Node's native `http.get`
@@ -87,8 +82,9 @@ Great! Here are some fun ideas to consider:
 
 Feel free to create an issue throwing your own ideas at me.
 
-# Because All the Cool Kids Do It
+# Because Software
 
+## Neat Little Badges
 [![cloudflare](https://www.cloudflare.com/media/images/web-badges/cf-web-badges-g-gray.png)](https://developers.cloudflare.com/workers/)
 
 
@@ -98,9 +94,7 @@ Feel free to create an issue throwing your own ideas at me.
 ## Disclaimer
 Besides being a happy customer, I am not affiliated with Cloudflare in any way.
 
-Just like your own users, assume that I have no idea what I'm doing.
-
-(This part is important, because I have no idea what I'm doing.)
+Assume in good faith that I have no idea what I'm doing.
 
 **REVIEW THE SOURCE**, and use at your own risk 🙈
 
