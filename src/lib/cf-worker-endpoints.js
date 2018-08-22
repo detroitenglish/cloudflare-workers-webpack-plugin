@@ -17,20 +17,4 @@ export default function(ax) {
 
     return console.log(`Success! Worker script uploaded 🚀`.green)
   }
-
-  // async function downloadWorker() {
-  //   const result = await ax({
-  //     url: `/workers/script`,
-  //     method: 'GET',
-  //   })
-  //   return result
-  // }
-
-  // async function deleteWorker() {
-  //   const result = await ax({
-  //     url: `/workers/script`,
-  //     method: 'DELETE',
-  //   })
-  //   return result
-  // }
 }
