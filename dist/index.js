@@ -99,6 +99,7 @@ class CloudflareWorkerPlugin {
     function _ref8(results) {
       results.filter(_ref4).forEach(_ref5);
       results.filter(_ref6).forEach(_ref7);
+      _this._existingRoutes.length = 0;
     }
 
     return _asyncToGenerator(function* () {
