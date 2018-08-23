@@ -67,9 +67,7 @@ plugins: [
 
 # Potential Issues
 
-Note this is currently tagged as `beta`. That means I can change the API willy-nilly, so fair warning!
-
-I don't plan on supporting the fancy-pants Enterprise Cloudflare Workers features anytime soon - mucho dinero (eyeyey...)
+This plugin does not support features reserved for Enterprise Cloudflare Workers.
 
 
 # Contributing
