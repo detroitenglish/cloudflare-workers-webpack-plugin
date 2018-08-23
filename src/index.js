@@ -62,6 +62,7 @@ class CloudflareWorkerPlugin {
       results
         .filter(r => !r.ok)
         .forEach(r => this._logg(`Pattern deletion failed: ${r.pattern}`.red))
+      this._existingRoutes.length = 0
     })
     return true
   }
