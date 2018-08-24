@@ -21,7 +21,7 @@ function _default(ax) {
   }
 
   function* _ref(data) {
-    const scriptSize = `${Math.floor(data.byteLength / 1024)}`;
+    const scriptSize = Math.floor(data.byteLength / 1024);
 
     if (scriptSize > 1000) {
       console.error(`Script size is ${scriptSize}KB`.red);

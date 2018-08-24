@@ -49,7 +49,11 @@ function printError(err) {
   const errors = err === null || err === void 0 ? void 0 : (_err$response = err.response) === null || _err$response === void 0 ? void 0 : _err$response.data.errors;
 
   if (errors && Array.isArray(errors)) {
-    errors.forEach(_ref3);
+    const _defined = _ref3;
+
+    for (let _i = 0; _i <= errors.length - 1; _i++) {
+      _defined(errors[_i], _i, errors);
+    }
   } else {
     console.error(err);
   }
@@ -72,8 +76,8 @@ function validateConfig([authEmail, authKey, {
 
   var _arr = Object.entries(requiredConfig);
 
-  for (var _i = 0; _i < _arr.length; _i++) {
-    let _arr$_i = _arr[_i],
+  for (var _i2 = 0; _i2 < _arr.length; _i2++) {
+    let _arr$_i = _arr[_i2],
         key = _arr$_i[0],
         value = _arr$_i[1];
 

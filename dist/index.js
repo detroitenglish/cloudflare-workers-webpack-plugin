@@ -20,19 +20,19 @@ function _ref3(r) {
   return r.pattern;
 }
 
-function _ref4(r) {
+function _ref5(r) {
   return r.ok;
 }
 
-function _ref6(r) {
+function _ref7(r) {
   return !r.ok;
 }
 
-function _ref9(r) {
+function _ref10(r) {
   return r.ok;
 }
 
-function _ref11(r) {
+function _ref12(r) {
   return !r.ok;
 }
 
@@ -88,17 +88,39 @@ class CloudflareWorkerPlugin {
   _clearAllExistingRoutes() {
     var _this = this;
 
-    function _ref5(r) {
+    function _ref4(r) {
       return _this._logg(`Deleted pattern: ${r.pattern}`.yellow);
     }
 
-    function _ref7(r) {
+    function _ref6(r) {
       return _this._logg(`Pattern deletion failed: ${r.pattern}`.red);
     }
 
     function _ref8(results) {
-      results.filter(_ref4).forEach(_ref5);
-      results.filter(_ref6).forEach(_ref7);
+      const _defined = _ref4;
+      const _defined5 = _ref5;
+      const _defined2 = [];
+
+      for (let _i3 = 0; _i3 <= results.length - 1; _i3++) {
+        if (_defined5(results[_i3], _i3, results)) _defined2.push(results[_i3]);
+      }
+
+      for (let _i = 0; _i <= _defined2.length - 1; _i++) {
+        _defined(_defined2[_i], _i, _defined2);
+      }
+
+      const _defined3 = _ref6;
+      const _defined6 = _ref7;
+      const _defined4 = [];
+
+      for (let _i4 = 0; _i4 <= results.length - 1; _i4++) {
+        if (_defined6(results[_i4], _i4, results)) _defined4.push(results[_i4]);
+      }
+
+      for (let _i2 = 0; _i2 <= _defined4.length - 1; _i2++) {
+        _defined3(_defined4[_i2], _i2, _defined4);
+      }
+
       _this._existingRoutes.length = 0;
     }
 
@@ -115,18 +137,39 @@ class CloudflareWorkerPlugin {
   _disableRemainingRoutes() {
     var _this2 = this;
 
-    function _ref10(r) {
+    function _ref9(r) {
       return _this2._logg(`Disabled route pattern: ${r.pattern}`.yellow);
     }
 
-    function _ref12(r) {
+    function _ref11(r) {
       return _this2._logg(`Failed to disabled route pattern: ${r.pattern}`.red);
     }
 
     return _asyncToGenerator(function* () {
       const disabledRoutes = yield Promise.all(_this2._existingRoutes.map(_this2._cfMethods.disableRoute));
-      disabledRoutes.filter(_ref9).forEach(_ref10);
-      disabledRoutes.filter(_ref11).forEach(_ref12);
+      const _defined7 = _ref9;
+      const _defined11 = _ref10;
+      const _defined8 = [];
+
+      for (let _i7 = 0; _i7 <= disabledRoutes.length - 1; _i7++) {
+        if (_defined11(disabledRoutes[_i7], _i7, disabledRoutes)) _defined8.push(disabledRoutes[_i7]);
+      }
+
+      for (let _i5 = 0; _i5 <= _defined8.length - 1; _i5++) {
+        _defined7(_defined8[_i5], _i5, _defined8);
+      }
+
+      const _defined9 = _ref11;
+      const _defined12 = _ref12;
+      const _defined10 = [];
+
+      for (let _i8 = 0; _i8 <= disabledRoutes.length - 1; _i8++) {
+        if (_defined12(disabledRoutes[_i8], _i8, disabledRoutes)) _defined10.push(disabledRoutes[_i8]);
+      }
+
+      for (let _i6 = 0; _i6 <= _defined10.length - 1; _i6++) {
+        _defined9(_defined10[_i6], _i6, _defined10);
+      }
     })();
   }
 
