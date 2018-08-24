@@ -37,6 +37,7 @@
     "eslint-config-prettier": "^3.0.1",
     "eslint-plugin-babel": "^5.1.0",
     "eslint-plugin-prettier": "^2.6.2",
+    "faster.js": "^1.1.0",
     "husky": "^0.14.3",
     "npm-run-all": "^4.1.3",
     "prettier": "^1.14.2"
@@ -54,6 +55,7 @@
     "cloudflare",
     "worker",
     "serverless",
+    "webpack-plugin",
     "cloudflare-worker"
   ],
   "engines": {

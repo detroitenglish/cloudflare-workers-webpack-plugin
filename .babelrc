@@ -15,6 +15,7 @@
   ],
   "plugins": [
     "closure-elimination",
+    "module:faster.js",
     "@babel/plugin-proposal-optional-chaining",
     "@babel/plugin-proposal-export-default-from"
   ]
