@@ -3,7 +3,7 @@ export default function(ax) {
   return { uploadWorker }
 
   async function uploadWorker(data) {
-    const scriptSize = `${Math.floor(data.byteLength / 1024)}`
+    const scriptSize = Math.floor(data.byteLength / 1024)
     if (scriptSize > 1000) {
       console.error(`Script size is ${scriptSize}KB`.red)
       throw new Error(`CF-Worker script size limit exceeded`)
