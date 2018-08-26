@@ -9,7 +9,6 @@ export default function(ax) {
       headers: { 'content-type': 'application/json' },
       data: { pattern, enabled: true },
     }).catch(() => ({ ok: false, pattern }))
-    console.log(`Enabled route pattern: ${pattern}`.green)
     return { ok: true, pattern }
   }
 
@@ -21,7 +20,7 @@ export default function(ax) {
   }
 
   async function disableRoute({ pattern, enabled, id }) {
-    if (!enabled) return { ok: true, pattern }
+    if (!enabled) return { ok: true, pattern, skipped: true }
     await ax({
       url: `/workers/filters/${id}`,
       method: 'PUT',
