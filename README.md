@@ -2,6 +2,9 @@
 
 Deploy freshly-bundled Cloudflare Worker scripts and route matching patterns **directly from your build step** 🚀
 
+![Example use in Cloudflare Worker Webpack Boilerplate](.github/cf-worker-webpack-boilerplate-deploy.gif?raw=true)
+
+&nbsp;&nbsp;&nbsp;&nbsp;_Example as implemented in [Cloudflare Worker Webpack Boilerplate](https://github.com/detroitenglish/cloudflare-worker-webpack-boilerplate)_
 
 # Usage
 
