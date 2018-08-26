@@ -1,6 +1,8 @@
 "use strict";
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.default = _default;
 
 require("core-js/modules/es6.promise");
@@ -39,7 +41,6 @@ function _default(ax) {
       ok: false,
       pattern
     }));
-    console.log(`Enabled route pattern: ${pattern}`.green);
     return {
       ok: true,
       pattern
@@ -78,7 +79,8 @@ function _default(ax) {
   }) {
     if (!enabled) return {
       ok: true,
-      pattern
+      pattern,
+      skipped: true
     };
     yield ax({
       url: `/workers/filters/${id}`,

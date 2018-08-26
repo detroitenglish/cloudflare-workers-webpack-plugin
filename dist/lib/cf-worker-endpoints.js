@@ -1,6 +1,8 @@
 "use strict";
 
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.default = _default;
 
 require("core-js/modules/es6.promise");
@@ -24,8 +26,7 @@ function _default(ax) {
     const scriptSize = Math.floor(data.byteLength / 1024);
 
     if (scriptSize > 1000) {
-      console.error(`Script size is ${scriptSize}KB`.red);
-      throw new Error(`CF-Worker script size limit exceeded`);
+      throw new Error(`CF-Worker script size limit exceeded (${scriptSize}KB)`);
     }
 
     yield ax({
@@ -36,7 +37,6 @@ function _default(ax) {
       },
       data
     });
-    return console.log(`Success! Worker script uploaded 🚀`.green);
   }
 
   function _uploadWorker() {
