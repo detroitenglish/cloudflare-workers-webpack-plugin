@@ -3,9 +3,10 @@ import axios from 'axios'
 import routeEndpoints from './cf-route-endpoints'
 import workerEndpoints from './cf-worker-endpoints'
 
-export function cfMethods(cfMail, cfKey, zoneId) {
+export function cfMethods(cfMail, cfKey, { zone }) {
+  if (!zone) return void 0
   const instance = axios.create({
-    baseURL: `https://api.cloudflare.com/client/v4/zones/${zoneId}`,
+    baseURL: `https://api.cloudflare.com/client/v4/zones/${zone}`,
     headers: {
       'X-Auth-Email': cfMail,
       'X-Auth-Key': cfKey,
@@ -20,10 +21,13 @@ export function cfMethods(cfMail, cfKey, zoneId) {
     }
   )
 
-  return { ...routeEndpoints(instance), ...workerEndpoints(instance) }
+  return {
+    ...routeEndpoints(instance),
+    ...workerEndpoints(instance),
+  }
 }
 
-function printError(err) {
+export function printError(err) {
   const errors = err?.response?.data.errors
   if (errors && Array.isArray(errors)) {
     errors.forEach(error => {
@@ -39,8 +43,10 @@ function printError(err) {
 export function validateConfig([
   authEmail,
   authKey,
-  { zone, script, pattern },
+  { zone, site, script, pattern },
 ]) {
+  if (!zone && !site)
+    throw new Error(`You must provide either a zone-id or site name`.red)
   const requiredConfig = {
     'CF-Account-Email': authEmail,
     'CF-API-Key': authKey,
@@ -65,4 +71,31 @@ export function validateConfig([
       throw new Error(`'pattern' must be a string or array of strings`)
     }
   }
+}
+
+export function logg(
+  stuff,
+  color = `cyan`,
+  emoji = color === `yellow` ? `⚠` : '👍'
+) {
+  if (!this._verbose) return void 0
+
+  let logType = color === `red` ? `error` : `info`
+
+  if (!this._colors) color = void 0
+  if (!this._emoji) emoji = void 0
+
+  let text = emoji ? `${emoji}  | ` : ``
+
+  switch (typeof stuff) {
+    case 'object':
+      text += color
+        ? `${JSON.stringify(stuff, null, 2)}`[color]
+        : `${JSON.stringify(stuff, null, 2)}`
+      break
+    default:
+      text += color ? String(stuff)[color] : String(stuff)
+  }
+
+  console[logType](text)
 }
