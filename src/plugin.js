@@ -182,7 +182,16 @@ export default class CloudflareWorkerPlugin {
   async _upsertPattern() {
     const newRoutes = await this._processRoutes()
     if (!newRoutes.length) return
-    await Promise.all(newRoutes.map(this._cfMethods.createRoute))
+    const created = await Promise.all(
+      newRoutes.map(this._cfMethods.createRoute)
+    )
+    created.forEach(p =>
+      this._logg(
+        `Created and enabled new route pattern: ${p.pattern}`,
+        `cyan`,
+        `🌟`
+      )
+    )
   }
 
   apply(compiler) {
@@ -205,7 +214,7 @@ export default class CloudflareWorkerPlugin {
               ? compilation.assets[filename].source()
               : fs.readFileSync(filename).toString()
 
-            this._logg(`Uploading worker...`, `green`)
+            this._logg(`Uploading worker...`, `green`, `🤖`)
 
             await this._cfMethods.uploadWorker(Buffer.from(code))
           } else {
