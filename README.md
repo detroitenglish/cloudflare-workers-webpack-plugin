@@ -65,11 +65,11 @@ You **must** provide one of the following two options:
 
 ## Options
 
-* `pattern`: optional - a route matching pattern, a comma-separated list of patterns, or an Array of patterns to enable for your newly spawned JavaScript minion (default: `undefined`)
+* `pattern`: a route matching pattern, a comma-separated list of patterns, or an Array of patterns to enable for your newly spawned JavaScript minion (default: `undefined`)
   - Example (string): `"*.your-site.lol/crazy/*/pattern"`
   - Example (list): `"*.your-site.lol/crazy/*/pattern,your-site.lol/another/*/crazy/*/pattern"`
   - Example (Array): `["*.your-site.lol/crazy/*/pattern", "your-site.lol/another/*/crazy/*/pattern"]`
-* `script`: optional - **relative** path to your worker script (default: `<webpack-config output file>`)
+* `script`: **relative** path to your worker script (default: `<webpack-config-output-file>`)
 * `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
 * `skipWorkerUpload`: Skip uploading the worker script and process only route patterns (default: `false`)
 * `verbose`: Log additional information about each deployment step to the console (default: `false`)
@@ -106,9 +106,7 @@ Feel free to create an issue throwing your own ideas at me.
 ## Disclaimer
 Besides a happy customer, I am not affiliated with Cloudflare in any way.
 
-Assume in good faith that I have no idea what I'm doing.
-
-**REVIEW THE SOURCE**, and use at your own risk 🙈
+Assume in good faith that I have no idea what I'm doing; **REVIEW THE SOURCE** and use at your own risk 🙈
 
 ## License
 [MIT](./LICENSE)
