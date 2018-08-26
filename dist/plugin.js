@@ -35,7 +35,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } const _defined13 = function _defined13(key) { _defineProperty(target, key, source[key]); }; for (let _i10 = 0; _i10 <= ownKeys.length - 1; _i10++) { _defined13(ownKeys[_i10], _i10, ownKeys); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } const _defined14 = function _defined14(key) { _defineProperty(target, key, source[key]); }; for (let _i11 = 0; _i11 <= ownKeys.length - 1; _i11++) { _defined14(ownKeys[_i11], _i11, ownKeys); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -287,17 +287,26 @@ class CloudflareWorkerPlugin {
   _upsertPattern() {
     var _this5 = this;
 
+    function _ref14(p) {
+      return _this5._logg(`Created and enabled new route pattern: ${p.pattern}`, `cyan`, `🌟`);
+    }
+
     return _asyncToGenerator(function* () {
       const newRoutes = yield _this5._processRoutes();
       if (!newRoutes.length) return;
-      yield Promise.all(newRoutes.map(_this5._cfMethods.createRoute));
+      const created = yield Promise.all(newRoutes.map(_this5._cfMethods.createRoute));
+      const _defined13 = _ref14;
+
+      for (let _i10 = 0; _i10 <= created.length - 1; _i10++) {
+        _defined13(created[_i10], _i10, created);
+      }
     })();
   }
 
   apply(compiler) {
     var _this6 = this;
 
-    function* _ref14(compilation) {
+    function* _ref15(compilation) {
       if (!_this6._enabled) return _this6._logg(`Cloudflare deployment disabled.`, `yellow`);
 
       if (_this6._deferValidation) {
@@ -313,7 +322,7 @@ class CloudflareWorkerPlugin {
           filename = _this6._script || compilation.outputOptions.filename;
           code = compilation.assets[filename] ? compilation.assets[filename].source() : _fs.default.readFileSync(filename).toString();
 
-          _this6._logg(`Uploading worker...`, `green`);
+          _this6._logg(`Uploading worker...`, `green`, `🤖`);
 
           yield _this6._cfMethods.uploadWorker(Buffer.from(code));
         } else {
@@ -335,7 +344,7 @@ class CloudflareWorkerPlugin {
     return compiler.hooks.afterEmit.tapPromise('CloudflareWorkerPlugin',
     /*#__PURE__*/
     function () {
-      var _ref2 = _asyncToGenerator(_ref14);
+      var _ref2 = _asyncToGenerator(_ref15);
 
       return function (_x2) {
         return _ref2.apply(this, arguments);
