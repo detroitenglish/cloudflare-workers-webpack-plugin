@@ -31,7 +31,7 @@ plugins: [
     $CLOUDFLARE_AUTH_KEY,           // second arg: api-key
     {                               // options object
       site: `your-site.lol`,
-      pattern: `*.your-site.lol/crazy/*/pattern`
+      pattern: `example.your-site.lol/crazy/pattern/*`
       clearRoutes: true,
       verbose: true,
       // See 'Configuration' below for additional options
@@ -66,9 +66,9 @@ You **must** provide one of the following two options:
 ## Options
 
 * `pattern`: a route matching pattern, a comma-separated list of patterns, or an Array of patterns to enable for your newly spawned JavaScript minion (default: `undefined`)
-  - Example (string): `"*.your-site.lol/crazy/*/pattern"`
-  - Example (list): `"*.your-site.lol/crazy/*/pattern,your-site.lol/another/*/crazy/*/pattern"`
-  - Example (Array): `["*.your-site.lol/crazy/*/pattern", "your-site.lol/another/*/crazy/*/pattern"]`
+  - Example (string): `"*.your-site.lol"`
+  - Example (list): `"*.your-site.lol,your-site.lol/some-pattern/*"`
+  - Example (Array): `["*.your-site.lol", "your-site.lol/some-pattern/*"]`
 * `script`: **relative** path to your worker script (default: `<webpack-config-output-file>`)
 * `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
 * `skipWorkerUpload`: Skip uploading the worker script and process only route patterns (default: `false`)
