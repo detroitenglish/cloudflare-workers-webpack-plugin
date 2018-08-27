@@ -15,14 +15,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 function _default(ax) {
   return {
-    uploadWorker
+    uploadWorker,
+    deleteWorker
   };
 
   function uploadWorker(_x) {
     return _uploadWorker.apply(this, arguments);
   }
 
-  function* _ref(data) {
+  function* _ref2(data) {
     const scriptSize = Math.floor(data.byteLength / 1024);
 
     if (scriptSize > 1000) {
@@ -40,7 +41,28 @@ function _default(ax) {
   }
 
   function _uploadWorker() {
-    _uploadWorker = _asyncToGenerator(_ref);
+    _uploadWorker = _asyncToGenerator(_ref2);
     return _uploadWorker.apply(this, arguments);
+  }
+
+  function deleteWorker() {
+    return _deleteWorker.apply(this, arguments);
+  }
+
+  function* _ref3() {
+    const _ref = yield ax({
+      url: `/workers/script`,
+      method: 'DELETE'
+    }),
+          ok = _ref.success;
+
+    return {
+      ok
+    };
+  }
+
+  function _deleteWorker() {
+    _deleteWorker = _asyncToGenerator(_ref3);
+    return _deleteWorker.apply(this, arguments);
   }
 }

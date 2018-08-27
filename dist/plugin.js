@@ -39,27 +39,34 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _ref3(r) {
-  return r.pattern;
+function _ref4(err) {
+  return {
+    ok: false,
+    status: err === null || err === void 0 ? void 0 : err.response.status
+  };
 }
 
 function _ref5(r) {
-  return r.ok;
+  return r.pattern;
 }
 
 function _ref7(r) {
-  return !r.ok;
+  return r.ok;
 }
 
-function _ref10(r) {
-  return r.ok && !r.skipped;
+function _ref9(r) {
+  return !r.ok;
 }
 
 function _ref12(r) {
+  return r.ok && !r.skipped;
+}
+
+function _ref14(r) {
   return !r.ok;
 }
 
-function* _ref13(pattern) {
+function* _ref15(pattern) {
   let matchingRoute;
 
   const matchIndex = this._existingRoutes.findIndex(r => r.pattern === pattern);
@@ -92,6 +99,7 @@ class CloudflareWorkerPlugin {
     verbose = false,
     colors = false,
     emoji = false,
+    reset = false,
     clearRoutes = false,
     skipWorkerUpload = false
   }) {
@@ -118,6 +126,7 @@ class CloudflareWorkerPlugin {
     this._zone = zone;
     this._site = site;
     this._enabled = !!enabled;
+    this._clearEverything = !!reset;
     this._clearRoutes = !!clearRoutes;
     this._verbose = !!verbose;
     this._colors = colors;
@@ -159,20 +168,35 @@ class CloudflareWorkerPlugin {
     })();
   }
 
-  _clearAllExistingRoutes() {
+  _nukeFuckingEverything() {
     var _this2 = this;
 
-    function _ref4(r) {
-      return _this2._logg(`Deleted pattern: ${r.pattern}`, `yellow`);
-    }
+    return _asyncToGenerator(function* () {
+      let _ref = yield _this2._cfMethods.getRoutes(),
+          existingRoutes = _ref.result;
+
+      _this2._existingRoutes.push(...existingRoutes);
+
+      yield _this2._clearAllExistingRoutes();
+      const adios = yield _this2._cfMethods.deleteWorker().catch(_ref4);
+      if (adios.ok) _this2._logg(`Worker script deleted`, `yellow`, `💀`);else if (adios.status === 404) _this2._logg(`No worker script to delete!`, `cyan`, `🤷`);
+    })();
+  }
+
+  _clearAllExistingRoutes() {
+    var _this3 = this;
 
     function _ref6(r) {
-      return _this2._logg(`Pattern deletion failed: ${r.pattern}`, `red`, `💩`);
+      return _this3._logg(`Deleted pattern: ${r.pattern}`, `yellow`);
     }
 
-    function _ref8(results) {
-      const _defined = _ref4;
-      const _defined5 = _ref5;
+    function _ref8(r) {
+      return _this3._logg(`Pattern deletion failed: ${r.pattern}`, `red`, `💩`);
+    }
+
+    function _ref10(results) {
+      const _defined = _ref6;
+      const _defined5 = _ref7;
       const _defined2 = [];
 
       for (let _i4 = 0; _i4 <= results.length - 1; _i4++) {
@@ -183,8 +207,8 @@ class CloudflareWorkerPlugin {
         _defined(_defined2[_i2], _i2, _defined2);
       }
 
-      const _defined3 = _ref6;
-      const _defined6 = _ref7;
+      const _defined3 = _ref8;
+      const _defined6 = _ref9;
       const _defined4 = [];
 
       for (let _i5 = 0; _i5 <= results.length - 1; _i5++) {
@@ -195,34 +219,34 @@ class CloudflareWorkerPlugin {
         _defined3(_defined4[_i3], _i3, _defined4);
       }
 
-      _this2._existingRoutes.length = 0;
+      _this3._existingRoutes.length = 0;
     }
 
     return _asyncToGenerator(function* () {
-      if (!_this2._existingRoutes.length) return;
+      if (!_this3._existingRoutes.length) return;
 
-      _this2._logg(`Deleting all routes: ${_this2._existingRoutes.map(_ref3).join(', ')}`, `yellow`, `💣`);
+      _this3._logg(`Deleting all routes: ${_this3._existingRoutes.map(_ref5).join(', ')}`, `yellow`, `💣`);
 
-      yield Promise.all(_this2._existingRoutes.map(_this2._cfMethods.deleteRoute)).then(_ref8);
+      yield Promise.all(_this3._existingRoutes.map(_this3._cfMethods.deleteRoute)).then(_ref10);
       return true;
     })();
   }
 
   _disableRemainingRoutes() {
-    var _this3 = this;
-
-    function _ref9(r) {
-      return _this3._logg(`Disabled route pattern: ${r.pattern}`, `yellow`);
-    }
+    var _this4 = this;
 
     function _ref11(r) {
-      return _this3._logg(`Failed to disabled route pattern: ${r.pattern}`, `red`, `💩`);
+      return _this4._logg(`Disabled route pattern: ${r.pattern}`, `yellow`);
+    }
+
+    function _ref13(r) {
+      return _this4._logg(`Failed to disabled route pattern: ${r.pattern}`, `red`, `💩`);
     }
 
     return _asyncToGenerator(function* () {
-      const disabledRoutes = yield Promise.all(_this3._existingRoutes.map(_this3._cfMethods.disableRoute));
-      const _defined7 = _ref9;
-      const _defined11 = _ref10;
+      const disabledRoutes = yield Promise.all(_this4._existingRoutes.map(_this4._cfMethods.disableRoute));
+      const _defined7 = _ref11;
+      const _defined11 = _ref12;
       const _defined8 = [];
 
       for (let _i8 = 0; _i8 <= disabledRoutes.length - 1; _i8++) {
@@ -233,8 +257,8 @@ class CloudflareWorkerPlugin {
         _defined7(_defined8[_i6], _i6, _defined8);
       }
 
-      const _defined9 = _ref11;
-      const _defined12 = _ref12;
+      const _defined9 = _ref13;
+      const _defined12 = _ref14;
       const _defined10 = [];
 
       for (let _i9 = 0; _i9 <= disabledRoutes.length - 1; _i9++) {
@@ -248,29 +272,29 @@ class CloudflareWorkerPlugin {
   }
 
   _processRoutes() {
-    var _this4 = this;
+    var _this5 = this;
 
     return _asyncToGenerator(function* () {
       let newRoutes = []; // bind the context for Array.map()
 
-      const existingHandler = enableExistingMatchingRoute.bind(_this4);
+      const existingHandler = enableExistingMatchingRoute.bind(_this5);
 
-      let _ref = yield _this4._cfMethods.getRoutes(),
-          existingRoutes = _ref.result;
+      let _ref2 = yield _this5._cfMethods.getRoutes(),
+          existingRoutes = _ref2.result;
 
-      _this4._existingRoutes.push(...existingRoutes);
+      _this5._existingRoutes.push(...existingRoutes);
 
-      if (_this4._clearRoutes) {
-        yield _this4._clearAllExistingRoutes(_this4._existingRoutes);
+      if (_this5._clearRoutes) {
+        yield _this5._clearAllExistingRoutes(_this5._existingRoutes);
       }
 
-      if (Array.isArray(_this4._pattern)) {
-        newRoutes.push(...(yield Promise.all(_this4._pattern.map(existingHandler))));
+      if (Array.isArray(_this5._pattern)) {
+        newRoutes.push(...(yield Promise.all(_this5._pattern.map(existingHandler))));
       } else {
-        newRoutes.push((yield existingHandler(_this4._pattern)));
+        newRoutes.push((yield existingHandler(_this5._pattern)));
       }
 
-      yield _this4._disableRemainingRoutes(existingRoutes);
+      yield _this5._disableRemainingRoutes(existingRoutes);
       return newRoutes.filter(Boolean);
 
       function enableExistingMatchingRoute(_x) {
@@ -278,24 +302,24 @@ class CloudflareWorkerPlugin {
       }
 
       function _enableExistingMatchingRoute() {
-        _enableExistingMatchingRoute = _asyncToGenerator(_ref13);
+        _enableExistingMatchingRoute = _asyncToGenerator(_ref15);
         return _enableExistingMatchingRoute.apply(this, arguments);
       }
     })();
   }
 
   _upsertPattern() {
-    var _this5 = this;
+    var _this6 = this;
 
-    function _ref14(p) {
-      return _this5._logg(`Created and enabled new route pattern: ${p.pattern}`, `cyan`, `🌟`);
+    function _ref16(p) {
+      return _this6._logg(`Created and enabled new route pattern: ${p.pattern}`, `cyan`, `🌟`);
     }
 
     return _asyncToGenerator(function* () {
-      const newRoutes = yield _this5._processRoutes();
+      const newRoutes = yield _this6._processRoutes();
       if (!newRoutes.length) return;
-      const created = yield Promise.all(newRoutes.map(_this5._cfMethods.createRoute));
-      const _defined13 = _ref14;
+      const created = yield Promise.all(newRoutes.map(_this6._cfMethods.createRoute));
+      const _defined13 = _ref16;
 
       for (let _i10 = 0; _i10 <= created.length - 1; _i10++) {
         _defined13(created[_i10], _i10, created);
@@ -304,38 +328,42 @@ class CloudflareWorkerPlugin {
   }
 
   apply(compiler) {
-    var _this6 = this;
+    var _this7 = this;
 
-    function* _ref15(compilation) {
-      if (!_this6._enabled) return _this6._logg(`Cloudflare deployment disabled.`, `yellow`);
+    function* _ref17(compilation) {
+      if (!_this7._enabled) return _this7._logg(`Cloudflare deployment disabled.`, `yellow`);
 
-      if (_this6._deferValidation) {
-        _this6._logg(`Looking up zone-id for '${_this6._site}'`, `cyan`, `🔎`);
+      if (_this7._deferValidation) {
+        _this7._logg(`Looking up zone-id for '${_this7._site}'`, `cyan`, `🔎`);
 
-        yield _this6._queryZoneInfo();
+        yield _this7._queryZoneInfo();
       }
 
       try {
         let filename, code;
 
-        if (!_this6._skipWorkerUpload) {
-          filename = _this6._script || compilation.outputOptions.filename;
+        if (_this7._clearEverything) {
+          return yield _this7._nukeFuckingEverything();
+        }
+
+        if (!_this7._skipWorkerUpload) {
+          filename = _this7._script || compilation.outputOptions.filename;
           code = compilation.assets[filename] ? compilation.assets[filename].source() : _fs.default.readFileSync(filename).toString();
 
-          _this6._logg(`Uploading worker...`, `green`, `🤖`);
+          _this7._logg(`Uploading worker...`, `green`, `🤖`);
 
-          yield _this6._cfMethods.uploadWorker(Buffer.from(code));
+          yield _this7._cfMethods.uploadWorker(Buffer.from(code));
         } else {
-          _this6._logg(`Skipping Cloudflare worker upload...`, `yellow`);
+          _this7._logg(`Skipping Cloudflare worker upload...`, `yellow`);
         }
 
-        if (_this6._pattern) {
-          yield _this6._upsertPattern();
+        if (_this7._pattern) {
+          yield _this7._upsertPattern();
         }
 
-        _this6._logg(`Success! Cloudflare worker deployed`, `green`, `🚀`);
+        _this7._logg(`Success! Cloudflare worker deployed`, `green`, `🚀`);
       } catch (err) {
-        _this6._logg(`${err.message}`, `red`, null);
+        _this7._logg(`${err.message}`, `red`, null);
 
         throw err;
       }
@@ -344,10 +372,10 @@ class CloudflareWorkerPlugin {
     return compiler.hooks.afterEmit.tapPromise('CloudflareWorkerPlugin',
     /*#__PURE__*/
     function () {
-      var _ref2 = _asyncToGenerator(_ref15);
+      var _ref3 = _asyncToGenerator(_ref17);
 
       return function (_x2) {
-        return _ref2.apply(this, arguments);
+        return _ref3.apply(this, arguments);
       };
     }());
   }
