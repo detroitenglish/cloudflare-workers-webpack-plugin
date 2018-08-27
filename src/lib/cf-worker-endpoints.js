@@ -1,6 +1,6 @@
 import 'colors'
 export default function(ax) {
-  return { uploadWorker }
+  return { uploadWorker, deleteWorker }
 
   async function uploadWorker(data) {
     const scriptSize = Math.floor(data.byteLength / 1024)
@@ -13,5 +13,13 @@ export default function(ax) {
       headers: { 'content-type': 'application/javascript' },
       data,
     })
+  }
+
+  async function deleteWorker() {
+    const { success: ok } = await ax({
+      url: `/workers/script`,
+      method: 'DELETE',
+    })
+    return { ok }
   }
 }

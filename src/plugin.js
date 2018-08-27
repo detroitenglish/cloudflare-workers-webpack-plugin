@@ -16,6 +16,7 @@ export default class CloudflareWorkerPlugin {
       verbose = false,
       colors = false,
       emoji = false,
+      reset = false,
       clearRoutes = false,
       skipWorkerUpload = false,
     }
@@ -39,6 +40,7 @@ export default class CloudflareWorkerPlugin {
     this._zone = zone
     this._site = site
     this._enabled = !!enabled
+    this._clearEverything = !!reset
     this._clearRoutes = !!clearRoutes
     this._verbose = !!verbose
     this._colors = colors
@@ -76,6 +78,21 @@ export default class CloudflareWorkerPlugin {
     Object.assign(this._cfMethods, {
       ...cfMethods(authEmail, authKey, { zone }),
     })
+  }
+
+  async _nukeFuckingEverything() {
+    let { result: existingRoutes } = await this._cfMethods.getRoutes()
+
+    this._existingRoutes.push(...existingRoutes)
+
+    await this._clearAllExistingRoutes()
+
+    const adios = await this._cfMethods
+      .deleteWorker()
+      .catch(err => ({ ok: false, status: err?.response.status }))
+    if (adios.ok) this._logg(`Worker script deleted`, `yellow`, `💀`)
+    else if (adios.status === 404)
+      this._logg(`No worker script to delete!`, `cyan`, `🤷`)
   }
 
   async _clearAllExistingRoutes() {
@@ -207,6 +224,10 @@ export default class CloudflareWorkerPlugin {
 
         try {
           let filename, code
+
+          if (this._clearEverything) {
+            return await this._nukeFuckingEverything()
+          }
 
           if (!this._skipWorkerUpload) {
             filename = this._script || compilation.outputOptions.filename
