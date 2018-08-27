@@ -72,6 +72,7 @@ You **must** provide one of the following two options:
 * `script`: **relative** path to your worker script (default: `<webpack-config-output-file>`)
 * `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
 * `skipWorkerUpload`: Skip uploading the worker script and process only route patterns (default: `false`)
+* `reset`: Delete ALL route patterns, DELETE existing worker script, and exit (default: `false`)
 * `verbose`: Log additional information about each deployment step to the console (default: `false`)
 * `colors`: Use colors in console output (default: `false`)
 * `emoji`: Use emoji in console output (default: `false`)
