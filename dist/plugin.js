@@ -11,13 +11,13 @@ require("core-js/modules/es6.symbol");
 
 require("core-js/modules/web.dom.iterable");
 
-require("core-js/modules/es6.promise");
-
 require("colors");
 
 var _fs = _interopRequireDefault(require("fs"));
 
 var _path = _interopRequireDefault(require("path"));
+
+var _bluebird = _interopRequireDefault(require("bluebird"));
 
 var _lib = require("./lib");
 
@@ -35,7 +35,7 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } const _defined14 = function _defined14(key) { _defineProperty(target, key, source[key]); }; for (let _i11 = 0; _i11 <= ownKeys.length - 1; _i11++) { _defined14(ownKeys[_i11], _i11, ownKeys); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } const _defined = function _defined(key) { _defineProperty(target, key, source[key]); }; for (let _i2 = 0; _i2 <= ownKeys.length - 1; _i2++) { _defined(ownKeys[_i2], _i2, ownKeys); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -50,23 +50,7 @@ function _ref5(r) {
   return r.pattern;
 }
 
-function _ref7(r) {
-  return r.ok;
-}
-
-function _ref9(r) {
-  return !r.ok;
-}
-
-function _ref12(r) {
-  return r.ok && !r.skipped;
-}
-
-function _ref14(r) {
-  return !r.ok;
-}
-
-function* _ref15(pattern) {
+function* _ref7(pattern) {
   let matchingRoute;
 
   const matchIndex = this._existingRoutes.findIndex(r => r.pattern === pattern);
@@ -186,37 +170,31 @@ class CloudflareWorkerPlugin {
   _clearAllExistingRoutes() {
     var _this3 = this;
 
-    function _ref6(r) {
-      return _this3._logg(`Deleted pattern: ${r.pattern}`, `yellow`);
-    }
+    function _ref6(results) {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
-    function _ref8(r) {
-      return _this3._logg(`Pattern deletion failed: ${r.pattern}`, `red`, `💩`);
-    }
-
-    function _ref10(results) {
-      const _defined = _ref6;
-      const _defined5 = _ref7;
-      const _defined2 = [];
-
-      for (let _i4 = 0; _i4 <= results.length - 1; _i4++) {
-        if (_defined5(results[_i4], _i4, results)) _defined2.push(results[_i4]);
-      }
-
-      for (let _i2 = 0; _i2 <= _defined2.length - 1; _i2++) {
-        _defined(_defined2[_i2], _i2, _defined2);
-      }
-
-      const _defined3 = _ref8;
-      const _defined6 = _ref9;
-      const _defined4 = [];
-
-      for (let _i5 = 0; _i5 <= results.length - 1; _i5++) {
-        if (_defined6(results[_i5], _i5, results)) _defined4.push(results[_i5]);
-      }
-
-      for (let _i3 = 0; _i3 <= _defined4.length - 1; _i3++) {
-        _defined3(_defined4[_i3], _i3, _defined4);
+      try {
+        for (var _iterator = results[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          let _step$value = _step.value,
+              ok = _step$value.ok,
+              pattern = _step$value.pattern;
+          if (ok) _this3._logg(`Deleted pattern: ${pattern}`, `yellow`);else _this3._logg(`Pattern deletion failed: ${pattern}`, `red`, `💩`);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
       }
 
       _this3._existingRoutes.length = 0;
@@ -227,7 +205,7 @@ class CloudflareWorkerPlugin {
 
       _this3._logg(`Deleting all routes: ${_this3._existingRoutes.map(_ref5).join(', ')}`, `yellow`, `💣`);
 
-      yield Promise.all(_this3._existingRoutes.map(_this3._cfMethods.deleteRoute)).then(_ref10);
+      yield _bluebird.default.all(_this3._existingRoutes.map(_this3._cfMethods.deleteRoute)).then(_ref6);
       return true;
     })();
   }
@@ -235,38 +213,33 @@ class CloudflareWorkerPlugin {
   _disableRemainingRoutes() {
     var _this4 = this;
 
-    function _ref11(r) {
-      return _this4._logg(`Disabled route pattern: ${r.pattern}`, `yellow`);
-    }
-
-    function _ref13(r) {
-      return _this4._logg(`Failed to disabled route pattern: ${r.pattern}`, `red`, `💩`);
-    }
-
     return _asyncToGenerator(function* () {
-      const disabledRoutes = yield Promise.all(_this4._existingRoutes.map(_this4._cfMethods.disableRoute));
-      const _defined7 = _ref11;
-      const _defined11 = _ref12;
-      const _defined8 = [];
+      const disabledRoutes = yield _bluebird.default.all(_this4._existingRoutes.map(_this4._cfMethods.disableRoute));
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
-      for (let _i8 = 0; _i8 <= disabledRoutes.length - 1; _i8++) {
-        if (_defined11(disabledRoutes[_i8], _i8, disabledRoutes)) _defined8.push(disabledRoutes[_i8]);
-      }
-
-      for (let _i6 = 0; _i6 <= _defined8.length - 1; _i6++) {
-        _defined7(_defined8[_i6], _i6, _defined8);
-      }
-
-      const _defined9 = _ref13;
-      const _defined12 = _ref14;
-      const _defined10 = [];
-
-      for (let _i9 = 0; _i9 <= disabledRoutes.length - 1; _i9++) {
-        if (_defined12(disabledRoutes[_i9], _i9, disabledRoutes)) _defined10.push(disabledRoutes[_i9]);
-      }
-
-      for (let _i7 = 0; _i7 <= _defined10.length - 1; _i7++) {
-        _defined9(_defined10[_i7], _i7, _defined10);
+      try {
+        for (var _iterator2 = disabledRoutes[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          let _step2$value = _step2.value,
+              ok = _step2$value.ok,
+              pattern = _step2$value.pattern,
+              skipped = _step2$value.skipped;
+          if (ok && !skipped) _this4._logg(`Disabled route pattern: ${pattern}`, `yellow`);else if (!ok) _this4._logg(`Failed to disabled route pattern: ${pattern}`, `red`, `💩`);
+        }
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2.return != null) {
+            _iterator2.return();
+          }
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
       }
     })();
   }
@@ -289,7 +262,7 @@ class CloudflareWorkerPlugin {
       }
 
       if (Array.isArray(_this5._pattern)) {
-        newRoutes.push(...(yield Promise.all(_this5._pattern.map(existingHandler))));
+        newRoutes.push(...(yield _bluebird.default.all(_this5._pattern.map(existingHandler))));
       } else {
         newRoutes.push((yield existingHandler(_this5._pattern)));
       }
@@ -302,7 +275,7 @@ class CloudflareWorkerPlugin {
       }
 
       function _enableExistingMatchingRoute() {
-        _enableExistingMatchingRoute = _asyncToGenerator(_ref15);
+        _enableExistingMatchingRoute = _asyncToGenerator(_ref7);
         return _enableExistingMatchingRoute.apply(this, arguments);
       }
     })();
@@ -311,18 +284,33 @@ class CloudflareWorkerPlugin {
   _upsertPattern() {
     var _this6 = this;
 
-    function _ref16(p) {
-      return _this6._logg(`Created and enabled new route pattern: ${p.pattern}`, `cyan`, `🌟`);
-    }
-
     return _asyncToGenerator(function* () {
       const newRoutes = yield _this6._processRoutes();
       if (!newRoutes.length) return;
-      const created = yield Promise.all(newRoutes.map(_this6._cfMethods.createRoute));
-      const _defined13 = _ref16;
+      const created = yield _bluebird.default.all(newRoutes.map(_this6._cfMethods.createRoute));
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
-      for (let _i10 = 0; _i10 <= created.length - 1; _i10++) {
-        _defined13(created[_i10], _i10, created);
+      try {
+        for (var _iterator3 = created[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          let pattern = _step3.value.pattern;
+
+          _this6._logg(`Created and enabled new route pattern: ${pattern}`, `cyan`, `🌟`);
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3.return != null) {
+            _iterator3.return();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
       }
     })();
   }
@@ -330,7 +318,7 @@ class CloudflareWorkerPlugin {
   apply(compiler) {
     var _this7 = this;
 
-    function* _ref17(compilation) {
+    function* _ref8(compilation) {
       if (!_this7._enabled) return _this7._logg(`Cloudflare deployment disabled.`, `yellow`);
 
       if (_this7._deferValidation) {
@@ -372,7 +360,7 @@ class CloudflareWorkerPlugin {
     return compiler.hooks.afterEmit.tapPromise('CloudflareWorkerPlugin',
     /*#__PURE__*/
     function () {
-      var _ref3 = _asyncToGenerator(_ref17);
+      var _ref3 = _asyncToGenerator(_ref8);
 
       return function (_x2) {
         return _ref3.apply(this, arguments);

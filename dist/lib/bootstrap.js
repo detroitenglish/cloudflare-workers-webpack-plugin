@@ -8,13 +8,13 @@ exports.printError = printError;
 exports.validateConfig = validateConfig;
 exports.logg = logg;
 
+require("core-js/modules/es7.object.entries");
+
 require("core-js/modules/es7.symbol.async-iterator");
 
 require("core-js/modules/es6.symbol");
 
 require("core-js/modules/web.dom.iterable");
-
-require("core-js/modules/es7.object.entries");
 
 require("colors");
 
@@ -34,7 +34,7 @@ function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = 
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } const _defined2 = function _defined2(key) { _defineProperty(target, key, source[key]); }; for (let _i3 = 0; _i3 <= ownKeys.length - 1; _i3++) { _defined2(ownKeys[_i3], _i3, ownKeys); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } const _defined = function _defined(key) { _defineProperty(target, key, source[key]); }; for (let _i2 = 0; _i2 <= ownKeys.length - 1; _i2++) { _defined(ownKeys[_i2], _i2, ownKeys); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -65,27 +65,43 @@ function cfMethods(cfMail, cfKey, {
   return _objectSpread({}, (0, _cfRouteEndpoints.default)(instance), (0, _cfWorkerEndpoints.default)(instance));
 }
 
-function _ref3(error) {
-  if (error.message) console.error(`[code ${error.code}]: ${error.message}`.red);else console.error(`${JSON.stringify(error, null, 2)}`.red);
-}
-
 function printError(err) {
   var _err$response;
 
   const errors = err === null || err === void 0 ? void 0 : (_err$response = err.response) === null || _err$response === void 0 ? void 0 : _err$response.data.errors;
 
-  if (errors && Array.isArray(errors)) {
-    const _defined = _ref3;
+  if (errors === null || errors === void 0 ? void 0 : errors.length) {
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
 
-    for (let _i = 0; _i <= errors.length - 1; _i++) {
-      _defined(errors[_i], _i, errors);
+    try {
+      for (var _iterator = errors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        let _step$value = _step.value,
+            code = _step$value.code,
+            message = _step$value.message;
+        console.error(`[code ${code}]: ${message}`);
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator.return != null) {
+          _iterator.return();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
     }
   } else {
     console.error(err);
   }
 }
 
-function _ref4(p) {
+function _ref3(p) {
   return typeof p === 'string';
 }
 
@@ -95,7 +111,7 @@ function validateConfig([authEmail, authKey, {
   script,
   pattern
 }]) {
-  if (!zone && !site) throw new Error(`You must provide either a zone-id or site name`.red);
+  if (!zone && !site) throw new Error(`You must provide either a zone-id or site name`);
   const requiredConfig = {
     'CF-Account-Email': authEmail,
     'CF-API-Key': authKey,
@@ -104,8 +120,8 @@ function validateConfig([authEmail, authKey, {
 
   var _arr = Object.entries(requiredConfig);
 
-  for (var _i2 = 0; _i2 < _arr.length; _i2++) {
-    let _arr$_i = _slicedToArray(_arr[_i2], 2),
+  for (var _i = 0; _i < _arr.length; _i++) {
+    let _arr$_i = _slicedToArray(_arr[_i], 2),
         key = _arr$_i[0],
         value = _arr$_i[1];
 
@@ -121,7 +137,7 @@ function validateConfig([authEmail, authKey, {
   if (script && typeof script !== 'string') throw new Error(`'script' is not a string`);
 
   if (pattern) {
-    if (Array.isArray(pattern) && !pattern.every(_ref4)) {
+    if (Array.isArray(pattern) && !pattern.every(_ref3)) {
       throw new Error(`'pattern' must be a string or array of strings`);
     } else if (typeof pattern !== 'string') {
       throw new Error(`'pattern' must be a string or array of strings`);

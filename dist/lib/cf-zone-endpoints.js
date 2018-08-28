@@ -5,8 +5,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.queryZoneInfo = queryZoneInfo;
 
-require("core-js/modules/es6.promise");
-
 require("colors");
 
 var _axios = _interopRequireDefault(require("axios"));
