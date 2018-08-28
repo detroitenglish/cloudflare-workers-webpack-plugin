@@ -1,6 +1,7 @@
 import 'colors'
 import fs from 'fs'
 import path from 'path'
+import Promise from 'bluebird'
 import { cfMethods, validateConfig, queryZoneInfo, logg } from './lib'
 
 export default class CloudflareWorkerPlugin {
@@ -107,14 +108,10 @@ export default class CloudflareWorkerPlugin {
     await Promise.all(
       this._existingRoutes.map(this._cfMethods.deleteRoute)
     ).then(results => {
-      results
-        .filter(r => r.ok)
-        .forEach(r => this._logg(`Deleted pattern: ${r.pattern}`, `yellow`))
-      results
-        .filter(r => !r.ok)
-        .forEach(r =>
-          this._logg(`Pattern deletion failed: ${r.pattern}`, `red`, `💩`)
-        )
+      for (let { ok, pattern } of results) {
+        if (ok) this._logg(`Deleted pattern: ${pattern}`, `yellow`)
+        else this._logg(`Pattern deletion failed: ${pattern}`, `red`, `💩`)
+      }
       this._existingRoutes.length = 0
     })
     return true
@@ -124,20 +121,12 @@ export default class CloudflareWorkerPlugin {
     const disabledRoutes = await Promise.all(
       this._existingRoutes.map(this._cfMethods.disableRoute)
     )
-    disabledRoutes
-      .filter(r => r.ok && !r.skipped)
-      .forEach(r =>
-        this._logg(`Disabled route pattern: ${r.pattern}`, `yellow`)
-      )
-    disabledRoutes
-      .filter(r => !r.ok)
-      .forEach(r =>
-        this._logg(
-          `Failed to disabled route pattern: ${r.pattern}`,
-          `red`,
-          `💩`
-        )
-      )
+    for (let { ok, pattern, skipped } of disabledRoutes) {
+      if (ok && !skipped)
+        this._logg(`Disabled route pattern: ${pattern}`, `yellow`)
+      else if (!ok)
+        this._logg(`Failed to disabled route pattern: ${pattern}`, `red`, `💩`)
+    }
   }
 
   async _processRoutes() {
@@ -202,13 +191,13 @@ export default class CloudflareWorkerPlugin {
     const created = await Promise.all(
       newRoutes.map(this._cfMethods.createRoute)
     )
-    created.forEach(p =>
+    for (let { pattern } of created) {
       this._logg(
-        `Created and enabled new route pattern: ${p.pattern}`,
+        `Created and enabled new route pattern: ${pattern}`,
         `cyan`,
         `🌟`
       )
-    )
+    }
   }
 
   apply(compiler) {
