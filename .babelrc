@@ -8,6 +8,9 @@
         "targets": {
           "node": "6"
         },
+        "exclude": [
+          "web.dom.iterable"
+        ],
         "debug": true
       }
     ]
