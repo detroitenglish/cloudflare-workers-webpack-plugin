@@ -29,12 +29,10 @@ export function cfMethods(cfMail, cfKey, { zone }) {
 
 export function printError(err) {
   const errors = err?.response?.data.errors
-  if (errors && Array.isArray(errors)) {
-    errors.forEach(error => {
-      if (error.message)
-        console.error(`[code ${error.code}]: ${error.message}`.red)
-      else console.error(`${JSON.stringify(error, null, 2)}`.red)
-    })
+  if (errors?.length) {
+    for (let { code, message } of errors) {
+      console.error(`[code ${code}]: ${message}`)
+    }
   } else {
     console.error(err)
   }
@@ -46,7 +44,7 @@ export function validateConfig([
   { zone, site, script, pattern },
 ]) {
   if (!zone && !site)
-    throw new Error(`You must provide either a zone-id or site name`.red)
+    throw new Error(`You must provide either a zone-id or site name`)
   const requiredConfig = {
     'CF-Account-Email': authEmail,
     'CF-API-Key': authKey,
