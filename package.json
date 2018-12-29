@@ -12,6 +12,10 @@
     "dist"
   ],
   "homepage": "https://github.com/detroitenglish/cloudflare-worker-webpack-plugin",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/detroitenglish/cloudflare-worker-webpack-plugin.git"
+  },
   "scripts": {
     "lint": "./node_modules/.bin/eslint src .babelrc.js",
     "precommit": "npm run lint",
@@ -20,35 +24,28 @@
     "build": "npm-run-all -s lint clean bundle"
   },
   "dependencies": {
-    "@babel/polyfill": "^7.0.0",
     "axios": "^0.18.0",
-    "bluebird": "^3.5.1",
-    "colors": "^1.3.2",
-    "is-valid-domain": "^0.0.5"
+    "colors": "^1.3.3",
+    "form-data": "^2.3.3",
+    "is-valid-domain": "^0.0.6"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-proposal-optional-chaining": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "babel-eslint": "^9.0.0",
-    "babel-plugin-closure-elimination": "^1.3.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.2.3",
+    "babel-eslint": "^10.0.1",
     "del-cli": "^1.1.0",
-    "eslint": "^5.4.0",
-    "eslint-config-prettier": "^3.0.1",
-    "eslint-plugin-babel": "^5.1.0",
-    "eslint-plugin-prettier": "^2.6.2",
-    "faster.js": "^1.1.0",
-    "husky": "^0.14.3",
-    "npm-run-all": "^4.1.3",
-    "prettier": "^1.14.2"
+    "eslint": "^5.11.1",
+    "eslint-config-prettier": "^3.3.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "husky": "^1.3.1",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^1.15.3"
   },
   "peerDependencies": {
     "webpack": ">=4"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/detroitenglish/cloudflare-worker-webpack-plugin.git"
   },
   "keywords": [
     "webpack",
@@ -60,6 +57,6 @@
     "cloudflare-worker"
   ],
   "engines": {
-    "node": ">=6"
+    "node": ">=8"
   }
 }
