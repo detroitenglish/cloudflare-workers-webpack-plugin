@@ -5,25 +5,25 @@ Object.defineProperty(exports, "__esModule", {
 });
 Object.defineProperty(exports, "cfMethods", {
   enumerable: true,
-  get: function get() {
+  get: function () {
     return _bootstrap.cfMethods;
   }
 });
 Object.defineProperty(exports, "validateConfig", {
   enumerable: true,
-  get: function get() {
+  get: function () {
     return _bootstrap.validateConfig;
   }
 });
 Object.defineProperty(exports, "logg", {
   enumerable: true,
-  get: function get() {
+  get: function () {
     return _bootstrap.logg;
   }
 });
 Object.defineProperty(exports, "queryZoneInfo", {
   enumerable: true,
-  get: function get() {
+  get: function () {
     return _cfZoneEndpoints.queryZoneInfo;
   }
 });
