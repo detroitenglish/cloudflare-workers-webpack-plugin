@@ -70,6 +70,7 @@ You **must** provide one of the following two options:
   - Example (list): `"*.your-site.lol,your-site.lol/some-pattern/*"`
   - Example (Array): `["*.your-site.lol", "your-site.lol/some-pattern/*"]`
 * `script`: **relative** path to your worker script (default: `<webpack-config-output-file>`)
+* `metadataPath`: Optional **relative** path to a [JSON metadata file with e.g. secrets](https://developers.cloudflare.com/workers/api/resource-bindings/secrets-vault/) (default: `undefined`)
 * `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
 * `skipWorkerUpload`: Skip uploading the worker script and process only route patterns (default: `false`)
 * `reset`: Delete ALL route patterns, DELETE existing worker script, and exit (default: `false`)
@@ -91,7 +92,7 @@ This plugin does not support features reserved for Enterprise Cloudflare Workers
 PR's are very much welcome. Here are some fun ideas to consider:
 
 - [ ] Write hella' cool automated tests
-- [ ] Help convince Cloudflare that '_Edge Gremlins_' is a **waaaay** cooler name
+- [ ] Support other neat Cloudflare Worker features like [Workers KV](https://developers.cloudflare.com/workers/kv/) and [wasm](https://developers.cloudflare.com/workers/api/resource-bindings/webassembly-modules/)
 
 Feel free to create an issue throwing your own ideas at me.
 
