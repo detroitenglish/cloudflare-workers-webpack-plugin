@@ -28,8 +28,10 @@ export function cfMethods(cfMail, cfKey, { zone }) {
 }
 
 export function printError(err) {
-  const errors = err?.response?.data.errors
-  if (errors?.length) {
+  const errors = []
+    .concat(err.response && err.response.data && err.response.data.erros)
+    .filter(Boolean)
+  if (errors.length) {
     for (let { code, message } of errors) {
       console.error(`[code ${code}]: ${message}`)
     }

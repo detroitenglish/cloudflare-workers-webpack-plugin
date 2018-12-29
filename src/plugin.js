@@ -1,7 +1,6 @@
 import 'colors'
 import fs from 'fs'
 import path from 'path'
-import Promise from 'bluebird'
 import { cfMethods, validateConfig, queryZoneInfo, logg } from './lib'
 
 export default class CloudflareWorkerPlugin {
@@ -11,6 +10,7 @@ export default class CloudflareWorkerPlugin {
     {
       script = void 0,
       pattern = void 0,
+      metadataPath = void 0,
       zone = null,
       site = null,
       enabled = true,
@@ -27,7 +27,13 @@ export default class CloudflareWorkerPlugin {
     } else if (!zone && site) {
       this._deferValidation = true
 
-      this._credentials = [authEmail, authKey, { site }]
+      this._credentials = [
+        authEmail,
+        authKey,
+        {
+          site,
+        },
+      ]
 
       this._configOptions = arguments[2]
 
@@ -47,7 +53,7 @@ export default class CloudflareWorkerPlugin {
     this._colors = colors
     this._emoji = emoji
     this._skipWorkerUpload = !!skipWorkerUpload
-
+    this._metadata = metadataPath ? fs.readFileSync(metadataPath) : void 0
     this._existingRoutes = []
 
     this._script =
@@ -55,11 +61,15 @@ export default class CloudflareWorkerPlugin {
 
     this._pattern = Array.isArray(pattern)
       ? pattern
-      : pattern.includes(',')
-        ? pattern.split(',')
+      : pattern.includes(',') // eslint-disable-next-line
+        ? pattern.split(',') // eslint-disable-next-line
         : pattern
 
-    this._cfMethods = { ...cfMethods(authEmail, authKey, { zone }) }
+    this._cfMethods = {
+      ...cfMethods(authEmail, authKey, {
+        zone,
+      }),
+    }
   }
 
   _logg(...args) {
@@ -68,7 +78,9 @@ export default class CloudflareWorkerPlugin {
 
   async _queryZoneInfo() {
     const [authEmail, authKey, { site }] = this._credentials
-    const zone = await queryZoneInfo(authEmail, authKey, { site })
+    const zone = await queryZoneInfo(authEmail, authKey, {
+      site,
+    })
     this._zone = zone
     this._logg(
       `Found! Zone-id for '${this._site}' is: ${this._zone}`,
@@ -77,7 +89,9 @@ export default class CloudflareWorkerPlugin {
     )
     this._validate()
     Object.assign(this._cfMethods, {
-      ...cfMethods(authEmail, authKey, { zone }),
+      ...cfMethods(authEmail, authKey, {
+        zone,
+      }),
     })
   }
 
@@ -88,9 +102,7 @@ export default class CloudflareWorkerPlugin {
 
     await this._clearAllExistingRoutes()
 
-    const adios = await this._cfMethods
-      .deleteWorker()
-      .catch(err => ({ ok: false, status: err?.response.status }))
+    const adios = await this._cfMethods.deleteWorker()
     if (adios.ok) this._logg(`Worker script deleted`, `yellow`, `💀`)
     else if (adios.status === 404)
       this._logg(`No worker script to delete!`, `cyan`, `🤷`)
@@ -225,8 +237,10 @@ export default class CloudflareWorkerPlugin {
               : fs.readFileSync(filename).toString()
 
             this._logg(`Uploading worker...`, `green`, `🤖`)
-
-            await this._cfMethods.uploadWorker(Buffer.from(code))
+            await this._cfMethods.uploadWorker({
+              script: Buffer.from(code),
+              metadata: this._metadata,
+            })
           } else {
             this._logg(`Skipping Cloudflare worker upload...`, `yellow`)
           }
