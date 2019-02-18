@@ -2,14 +2,14 @@ import 'colors'
 export default function(ax) {
   return { createRoute, getRoutes, enableRoute, disableRoute, deleteRoute }
 
-  async function createRoute(pattern) {
+  async function createRoute(pattern, enabled = true) {
     await ax({
       url: `/workers/filters`,
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      data: { pattern, enabled: true },
+      data: { pattern, enabled: enabled },
     }).catch(() => ({ ok: false, pattern }))
-    return { ok: true, pattern }
+    return { ok: true, pattern, enabled }
   }
 
   async function getRoutes() {

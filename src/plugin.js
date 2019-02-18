@@ -62,8 +62,32 @@ export default class CloudflareWorkerPlugin {
     this._pattern = Array.isArray(pattern)
       ? pattern
       : pattern.includes(',') // eslint-disable-next-line
-        ? pattern.split(',') // eslint-disable-next-line
-        : pattern
+      ? pattern.split(',') // eslint-disable-next-line
+      : [pattern]
+
+    this._pattern = this._pattern.map(route => {
+      if (typeof route === 'string') {
+        return {
+          pattern: route,
+          enabled: true,
+        }
+      }
+      return {
+        enabled: true,
+        ...route,
+      }
+    })
+
+    this._pattern = this._pattern.filter(route => {
+      if (route && route.pattern) {
+        return true
+      }
+      this._logg(
+        `Some routes ignore because of invalid format. You can provide a string, a array of string or an array object of shape { pattern: STRING, enable: BOOL }`,
+        'warning'
+      )
+      return false
+    })
 
     this._cfMethods = {
       ...cfMethods(authEmail, authKey, {
@@ -154,46 +178,58 @@ export default class CloudflareWorkerPlugin {
       await this._clearAllExistingRoutes(this._existingRoutes)
     }
 
-    if (Array.isArray(this._pattern)) {
-      newRoutes.push(...(await Promise.all(this._pattern.map(existingHandler))))
-    } else {
-      newRoutes.push(await existingHandler(this._pattern))
-    }
+    newRoutes.push(...(await Promise.all(this._pattern.map(existingHandler))))
 
     await this._disableRemainingRoutes(existingRoutes)
 
     return newRoutes.filter(Boolean)
 
-    async function enableExistingMatchingRoute(pattern) {
+    async function enableExistingMatchingRoute(route) {
       let matchingRoute
       const matchIndex = this._existingRoutes.findIndex(
-        r => r.pattern === pattern
+        r => r.pattern === route.pattern
       )
       if (matchIndex > -1) {
         matchingRoute = this._existingRoutes.splice(matchIndex, 1).pop()
-        if (matchingRoute.enabled) {
+        if (matchingRoute.enabled === route.enabled) {
           this._logg(
-            `Pattern already enabled: ${matchingRoute.pattern}`,
+            `Pattern already registered: ${matchingRoute.pattern}`,
             `green`
           )
         } else {
-          this._logg(
-            `Re-enabling exiting pattern: ${matchingRoute.pattern}`,
-            `green`
-          )
-          const enabled = await this._cfMethods.enableRoute(matchingRoute)
-          if (enabled.ok)
-            this._logg(`Enabled route pattern: ${enabled.pattern}`, `green`)
-          else
+          if (route.enabled) {
             this._logg(
-              `Failed to enabled route pattern: ${enabled.pattern}`,
-              `red`,
-              `💩`
+              `Re-enabling exiting pattern: ${matchingRoute.pattern}`,
+              `green`
             )
+            const enabled = await this._cfMethods.enableRoute(matchingRoute)
+            if (enabled.ok)
+              this._logg(`Enabled route pattern: ${enabled.pattern}`, `green`)
+            else
+              this._logg(
+                `Failed to enabled route pattern: ${enabled.pattern}`,
+                `red`,
+                `💩`
+              )
+          } else {
+            this._logg(
+              `Disabling exiting pattern: ${matchingRoute.pattern}`,
+              `green`
+            )
+            const enabled = await this._cfMethods.disableRoute(matchingRoute)
+            if (enabled.ok)
+              this._logg(`Disabled route pattern: ${enabled.pattern}`, `green`)
+            else
+              this._logg(
+                `Failed to disabled route pattern: ${enabled.pattern}`,
+                `red`,
+                `💩`
+              )
+          }
         }
         return false
       }
-      return pattern
+      return route
     }
   }
 
@@ -201,11 +237,13 @@ export default class CloudflareWorkerPlugin {
     const newRoutes = await this._processRoutes()
     if (!newRoutes.length) return
     const created = await Promise.all(
-      newRoutes.map(this._cfMethods.createRoute)
+      newRoutes.map(route =>
+        this._cfMethods.createRoute(route.pattern, route.enabled)
+      )
     )
-    for (let { pattern } of created) {
+    for (let { pattern, enabled } of created) {
       this._logg(
-        `Created and enabled new route pattern: ${pattern}`,
+        `${enabled ? 'Enabled' : 'Disabled'} new route pattern: ${pattern}`,
         `cyan`,
         `🌟`
       )

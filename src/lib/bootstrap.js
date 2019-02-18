@@ -65,10 +65,16 @@ export function validateConfig([
     throw new Error(`'script' is not a string`)
 
   if (pattern) {
-    if (Array.isArray(pattern) && !pattern.every(p => typeof p === 'string')) {
-      throw new Error(`'pattern' must be a string or array of strings`)
+    if (Array.isArray(pattern)) {
+      if (!pattern.every(p => typeof p === 'string' || !!p.pattern)) {
+        throw new Error(
+          `'pattern' must be a string, an array of strings or an object with a 'pattern' key`
+        )
+      }
     } else if (typeof pattern !== 'string') {
-      throw new Error(`'pattern' must be a string or array of strings`)
+      throw new Error(
+        `'pattern' must be a string, an array of strings or an object with a 'pattern' key`
+      )
     }
   }
 }

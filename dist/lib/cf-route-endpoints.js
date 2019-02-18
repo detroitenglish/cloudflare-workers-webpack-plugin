@@ -16,7 +16,7 @@ function _default(ax) {
     deleteRoute
   };
 
-  async function createRoute(pattern) {
+  async function createRoute(pattern, enabled = true) {
     await ax({
       url: `/workers/filters`,
       method: 'POST',
@@ -25,7 +25,7 @@ function _default(ax) {
       },
       data: {
         pattern,
-        enabled: true
+        enabled: enabled
       }
     }).catch(() => ({
       ok: false,

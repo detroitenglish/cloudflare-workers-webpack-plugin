@@ -66,7 +66,30 @@ class CloudflareWorkerPlugin {
     this._metadata = metadataPath ? _fs.default.readFileSync(metadataPath) : void 0;
     this._existingRoutes = [];
     this._script = script && enabled ? _path.default.normalize(`${process.cwd()}/${script}`) : void 0;
-    this._pattern = Array.isArray(pattern) ? pattern : pattern.includes(',') ? pattern.split(',') : pattern;
+    this._pattern = Array.isArray(pattern) ? pattern : pattern.includes(',') // eslint-disable-next-line
+    ? pattern.split(',') // eslint-disable-next-line
+    : [pattern];
+    this._pattern = this._pattern.map(route => {
+      if (typeof route === 'string') {
+        return {
+          pattern: route,
+          enabled: true
+        };
+      }
+
+      return _objectSpread({
+        enabled: true
+      }, route);
+    });
+    this._pattern = this._pattern.filter(route => {
+      if (route && route.pattern) {
+        return true;
+      }
+
+      this._logg(`Some routes ignore because of invalid format. You can provide a string, a array of string or an array object of shape { pattern: STRING, enable: BOOL }`, 'warning');
+
+      return false;
+    });
     this._cfMethods = _objectSpread({}, (0, _lib.cfMethods)(authEmail, authKey, {
       zone
     }));
@@ -152,50 +175,54 @@ class CloudflareWorkerPlugin {
       await this._clearAllExistingRoutes(this._existingRoutes);
     }
 
-    if (Array.isArray(this._pattern)) {
-      newRoutes.push(...(await Promise.all(this._pattern.map(existingHandler))));
-    } else {
-      newRoutes.push((await existingHandler(this._pattern)));
-    }
-
+    newRoutes.push(...(await Promise.all(this._pattern.map(existingHandler))));
     await this._disableRemainingRoutes(existingRoutes);
     return newRoutes.filter(Boolean);
 
-    async function enableExistingMatchingRoute(pattern) {
+    async function enableExistingMatchingRoute(route) {
       let matchingRoute;
 
-      const matchIndex = this._existingRoutes.findIndex(r => r.pattern === pattern);
+      const matchIndex = this._existingRoutes.findIndex(r => r.pattern === route.pattern);
 
       if (matchIndex > -1) {
         matchingRoute = this._existingRoutes.splice(matchIndex, 1).pop();
 
-        if (matchingRoute.enabled) {
-          this._logg(`Pattern already enabled: ${matchingRoute.pattern}`, `green`);
+        if (matchingRoute.enabled === route.enabled) {
+          this._logg(`Pattern already registered: ${matchingRoute.pattern}`, `green`);
         } else {
-          this._logg(`Re-enabling exiting pattern: ${matchingRoute.pattern}`, `green`);
+          if (route.enabled) {
+            this._logg(`Re-enabling exiting pattern: ${matchingRoute.pattern}`, `green`);
 
-          const enabled = await this._cfMethods.enableRoute(matchingRoute);
-          if (enabled.ok) this._logg(`Enabled route pattern: ${enabled.pattern}`, `green`);else this._logg(`Failed to enabled route pattern: ${enabled.pattern}`, `red`, `💩`);
+            const enabled = await this._cfMethods.enableRoute(matchingRoute);
+            if (enabled.ok) this._logg(`Enabled route pattern: ${enabled.pattern}`, `green`);else this._logg(`Failed to enabled route pattern: ${enabled.pattern}`, `red`, `💩`);
+          } else {
+            this._logg(`Disabling exiting pattern: ${matchingRoute.pattern}`, `green`);
+
+            const enabled = await this._cfMethods.disableRoute(matchingRoute);
+            if (enabled.ok) this._logg(`Disabled route pattern: ${enabled.pattern}`, `green`);else this._logg(`Failed to disabled route pattern: ${enabled.pattern}`, `red`, `💩`);
+          }
         }
 
         return false;
       }
 
-      return pattern;
+      return route;
     }
   }
 
   async _upsertPattern() {
     const newRoutes = await this._processRoutes();
     if (!newRoutes.length) return;
-    const created = await Promise.all(newRoutes.map(this._cfMethods.createRoute));
+    const created = await Promise.all(newRoutes.map(route => this._cfMethods.createRoute(route.pattern, route.enabled)));
+    console.log(created);
 
     for (let _ref3 of created) {
       let {
         pattern
       } = _ref3;
+      console.log(pattern);
 
-      this._logg(`Created and enabled new route pattern: ${pattern}`, `cyan`, `🌟`);
+      this._logg(`Created new route pattern: ${pattern}`, `cyan`, `🌟`);
     }
   }
 
