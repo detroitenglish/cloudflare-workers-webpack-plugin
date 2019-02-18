@@ -214,14 +214,11 @@ class CloudflareWorkerPlugin {
     const newRoutes = await this._processRoutes();
     if (!newRoutes.length) return;
     const created = await Promise.all(newRoutes.map(route => this._cfMethods.createRoute(route.pattern, route.enabled)));
-    console.log(created);
 
     for (let _ref3 of created) {
       let {
         pattern
       } = _ref3;
-      console.log(pattern);
-
       this._logg(`Created new route pattern: ${pattern}`, `cyan`, `🌟`);
     }
   }
