@@ -65,10 +65,11 @@ You **must** provide one of the following two options:
 
 ## Options
 
-* `pattern`: a route matching pattern, a comma-separated list of patterns, or an Array of patterns to enable for your newly spawned JavaScript minion (default: `undefined`)
+* `pattern`: a route matching pattern, a comma-separated list of patterns, an Array of patterns or an Array of Object to enable (or disable) for your newly spawned JavaScript minion (default: `undefined`). Unless `enabled` is specified, it's assumed to be `enabled`
   - Example (string): `"*.your-site.lol"`
   - Example (list): `"*.your-site.lol,your-site.lol/some-pattern/*"`
-  - Example (Array): `["*.your-site.lol", "your-site.lol/some-pattern/*"]`
+  - Example (string Array): `["*.your-site.lol", "your-site.lol/some-pattern/*"]`
+  - Example (Object Array): `[{ pattern: "*.your-site.lol", enabled: true }, { pattern: "some-pattern.your-site.lol", enabled: false }]`
 * `script`: **relative** path to your worker script (default: `<webpack-config-output-file>`)
 * `metadataPath`: Optional **relative** path to a [JSON metadata file with e.g. secrets](https://developers.cloudflare.com/workers/api/resource-bindings/secrets-vault/) (default: `undefined`)
 * `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
