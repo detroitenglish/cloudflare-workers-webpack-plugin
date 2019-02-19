@@ -21,6 +21,12 @@ Object.defineProperty(exports, "logg", {
     return _bootstrap.logg;
   }
 });
+Object.defineProperty(exports, "patternsToArray", {
+  enumerable: true,
+  get: function () {
+    return _bootstrap.patternsToArray;
+  }
+});
 Object.defineProperty(exports, "queryZoneInfo", {
   enumerable: true,
   get: function () {

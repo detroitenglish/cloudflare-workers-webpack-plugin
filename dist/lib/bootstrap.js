@@ -7,6 +7,7 @@ exports.cfMethods = cfMethods;
 exports.printError = printError;
 exports.validateConfig = validateConfig;
 exports.logg = logg;
+exports.patternsToArray = patternsToArray;
 
 require("colors");
 
@@ -110,4 +111,8 @@ function logg(stuff, color = `cyan`, emoji = color === `yellow` ? `⚠` : '👍'
   }
 
   console[logType](text);
+}
+
+function patternsToArray(patterns) {
+  return Array.isArray(patterns) ? patterns : patterns.split(',');
 }
