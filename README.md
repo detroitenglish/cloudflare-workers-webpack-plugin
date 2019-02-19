@@ -31,7 +31,8 @@ plugins: [
     $CLOUDFLARE_AUTH_KEY,           // second arg: api-key
     {                               // options object
       site: `your-site.lol`,
-      pattern: `example.your-site.lol/crazy/pattern/*`
+      enabledPatterns: `omg.your-site.lol/*,example.your-site.lol/crazy/pattern/*`,
+      disabledPatterns: `example.your-site.lol/crazy/pattern/ignore-me-tho`,
       clearRoutes: true,
       verbose: true,
       // See 'Configuration' below for additional options
@@ -65,13 +66,13 @@ You **must** provide one of the following two options:
 
 ## Options
 
-* `pattern`: a route matching pattern, a comma-separated list of patterns, or an Array of patterns to enable for your newly spawned JavaScript minion (default: `undefined`)
+* `enabledPatterns`: a single route matching pattern, a comma-separated list of patterns, or an Array of patterns to enable for your newly spawned JavaScript minion (default: `undefined`)
   - Example (string): `"*.your-site.lol"`
   - Example (list): `"*.your-site.lol,your-site.lol/some-pattern/*"`
   - Example (Array): `["*.your-site.lol", "your-site.lol/some-pattern/*"]`
+* `disabledPatterns`: same as `enabledPatterns` above, but the worker will **ignore** requests matching these patterns.
 * `script`: **relative** path to your worker script (default: `<webpack-config-output-file>`)
 * `metadataPath`: Optional **relative** path to a [JSON metadata file with e.g. secrets](https://developers.cloudflare.com/workers/api/resource-bindings/secrets-vault/) (default: `undefined`)
-* `clearRoutes`: Delete ALL existing route patterns; requires a `pattern` string be provided (default: `false`)
 * `skipWorkerUpload`: Skip uploading the worker script and process only route patterns (default: `false`)
 * `reset`: Delete ALL route patterns, DELETE existing worker script, and exit (default: `false`)
 * `verbose`: Log additional information about each deployment step to the console (default: `false`)
@@ -79,7 +80,7 @@ You **must** provide one of the following two options:
 * `emoji`: Use emoji in console output (default: `false`)
 * `enabled`: Whether to deploy to Cloudflare or bypass; useful for e.g. CI and testing (default: `true`)
 
-**Note**: If you provide 1 or more matching patterns, any currently enabled matching patterns will be disabled if they are not included in the `pattern` option.
+**Note**: Any existing patterns not found in `enabledPatterns` or `disabledPatterns` will be **deleted**!
 
 
 # Potential Issues
