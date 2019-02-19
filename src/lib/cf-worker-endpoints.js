@@ -36,6 +36,9 @@ export default function(ax) {
     const { success: ok } = await ax({
       url: `/workers/script`,
       method: 'DELETE',
+    }).catch(err => {
+      if (err.sucess) return err
+      else throw err
     })
     return { ok }
   }

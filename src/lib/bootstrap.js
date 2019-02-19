@@ -16,7 +16,15 @@ export function cfMethods(cfMail, cfKey, { zone }) {
   instance.interceptors.response.use(
     response => response.data,
     err => {
-      printError(err)
+      if (
+        err.response &&
+        err.response.config.method === 'delete' &&
+        err.response.status === 404
+      ) {
+        return { success: true }
+      } else {
+        printError(err)
+      }
       throw err
     }
   )
