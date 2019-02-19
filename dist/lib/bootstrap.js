@@ -38,7 +38,14 @@ function cfMethods(cfMail, cfKey, {
   });
 
   instance.interceptors.response.use(response => response.data, err => {
-    printError(err);
+    if (err.response && err.response.config.method === 'delete' && err.response.status === 404) {
+      return {
+        success: true
+      };
+    } else {
+      printError(err);
+    }
+
     throw err;
   });
   return _objectSpread({}, (0, _cfRouteEndpoints.default)(instance), (0, _cfWorkerEndpoints.default)(instance));
