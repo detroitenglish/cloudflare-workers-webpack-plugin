@@ -99,3 +99,7 @@ export function logg(
 
   console[logType](text)
 }
+
+export function patternsToArray(patterns) {
+  return Array.isArray(patterns) ? patterns : patterns.split(',')
+}

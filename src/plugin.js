@@ -1,16 +1,24 @@
 import 'colors'
 import fs from 'fs'
 import path from 'path'
-import { cfMethods, validateConfig, queryZoneInfo, logg } from './lib'
+import {
+  cfMethods,
+  validateConfig,
+  queryZoneInfo,
+  logg,
+  patternsToArray,
+} from './lib'
 
 export default class CloudflareWorkerPlugin {
   constructor(
     authEmail = null,
     authKey = null,
     {
-      script = void 0,
-      pattern = void 0,
-      metadataPath = void 0,
+      script,
+      pattern,
+      metadataPath,
+      enabledPatterns = [],
+      disabledPatterns = [],
       zone = null,
       site = null,
       enabled = true,
@@ -18,7 +26,6 @@ export default class CloudflareWorkerPlugin {
       colors = false,
       emoji = false,
       reset = false,
-      clearRoutes = false,
       skipWorkerUpload = false,
     }
   ) {
@@ -48,22 +55,32 @@ export default class CloudflareWorkerPlugin {
     this._site = site
     this._enabled = !!enabled
     this._clearEverything = !!reset
-    this._clearRoutes = !!clearRoutes
     this._verbose = !!verbose
     this._colors = colors
     this._emoji = emoji
     this._skipWorkerUpload = !!skipWorkerUpload
     this._metadata = metadataPath ? fs.readFileSync(metadataPath) : void 0
-    this._existingRoutes = []
 
+    // TODO: process.cwd is probably NOT the best way to handle this... what is?
     this._script =
       script && enabled ? path.normalize(`${process.cwd()}/${script}`) : void 0
 
-    this._pattern = Array.isArray(pattern)
-      ? pattern
-      : pattern.includes(',') // eslint-disable-next-line
-        ? pattern.split(',') // eslint-disable-next-line
-        : pattern
+    if (pattern) {
+      throw new Error(
+        `Config option 'pattern' is not supported in >=2.0.0 - Use 'enabledPatterns' and 'disabledPatterns' instead`
+      )
+    }
+
+    this._routePatterns = [
+      ...patternsToArray(enabledPatterns).map(pattern => ({
+        pattern,
+        enabled: true,
+      })),
+      ...patternsToArray(disabledPatterns).map(pattern => ({
+        pattern,
+        enabled: false,
+      })),
+    ]
 
     this._cfMethods = {
       ...cfMethods(authEmail, authKey, {
@@ -96,12 +113,7 @@ export default class CloudflareWorkerPlugin {
   }
 
   async _nukeFuckingEverything() {
-    let { result: existingRoutes } = await this._cfMethods.getRoutes()
-
-    this._existingRoutes.push(...existingRoutes)
-
     await this._clearAllExistingRoutes()
-
     const adios = await this._cfMethods.deleteWorker()
     if (adios.ok) this._logg(`Worker script deleted`, `yellow`, `💀`)
     else if (adios.status === 404)
@@ -109,106 +121,23 @@ export default class CloudflareWorkerPlugin {
   }
 
   async _clearAllExistingRoutes() {
-    if (!this._existingRoutes.length) return
+    let { result: existingRoutes = [] } = await this._cfMethods.getRoutes()
+    if (!existingRoutes.length) return
     this._logg(
-      `Deleting all routes: ${this._existingRoutes
+      `Removing existing routes: ${existingRoutes
         .map(r => r.pattern)
         .join(', ')}`,
       `yellow`,
       `💣`
     )
-    await Promise.all(
-      this._existingRoutes.map(this._cfMethods.deleteRoute)
-    ).then(results => {
-      for (let { ok, pattern } of results) {
-        if (ok) this._logg(`Deleted pattern: ${pattern}`, `yellow`)
-        else this._logg(`Pattern deletion failed: ${pattern}`, `red`, `💩`)
-      }
-      this._existingRoutes.length = 0
-    })
-    return true
-  }
-
-  async _disableRemainingRoutes() {
-    const disabledRoutes = await Promise.all(
-      this._existingRoutes.map(this._cfMethods.disableRoute)
-    )
-    for (let { ok, pattern, skipped } of disabledRoutes) {
-      if (ok && !skipped)
-        this._logg(`Disabled route pattern: ${pattern}`, `yellow`)
-      else if (!ok)
-        this._logg(`Failed to disabled route pattern: ${pattern}`, `red`, `💩`)
-    }
+    await Promise.all(existingRoutes.map(this._cfMethods.deleteRoute))
   }
 
   async _processRoutes() {
-    let newRoutes = []
-    // bind the context for Array.map()
-    const existingHandler = enableExistingMatchingRoute.bind(this)
-
-    let { result: existingRoutes } = await this._cfMethods.getRoutes()
-
-    this._existingRoutes.push(...existingRoutes)
-
-    if (this._clearRoutes) {
-      await this._clearAllExistingRoutes(this._existingRoutes)
-    }
-
-    if (Array.isArray(this._pattern)) {
-      newRoutes.push(...(await Promise.all(this._pattern.map(existingHandler))))
-    } else {
-      newRoutes.push(await existingHandler(this._pattern))
-    }
-
-    await this._disableRemainingRoutes(existingRoutes)
-
-    return newRoutes.filter(Boolean)
-
-    async function enableExistingMatchingRoute(pattern) {
-      let matchingRoute
-      const matchIndex = this._existingRoutes.findIndex(
-        r => r.pattern === pattern
-      )
-      if (matchIndex > -1) {
-        matchingRoute = this._existingRoutes.splice(matchIndex, 1).pop()
-        if (matchingRoute.enabled) {
-          this._logg(
-            `Pattern already enabled: ${matchingRoute.pattern}`,
-            `green`
-          )
-        } else {
-          this._logg(
-            `Re-enabling exiting pattern: ${matchingRoute.pattern}`,
-            `green`
-          )
-          const enabled = await this._cfMethods.enableRoute(matchingRoute)
-          if (enabled.ok)
-            this._logg(`Enabled route pattern: ${enabled.pattern}`, `green`)
-          else
-            this._logg(
-              `Failed to enabled route pattern: ${enabled.pattern}`,
-              `red`,
-              `💩`
-            )
-        }
-        return false
-      }
-      return pattern
-    }
-  }
-
-  async _upsertPattern() {
-    const newRoutes = await this._processRoutes()
-    if (!newRoutes.length) return
-    const created = await Promise.all(
-      newRoutes.map(this._cfMethods.createRoute)
-    )
-    for (let { pattern } of created) {
-      this._logg(
-        `Created and enabled new route pattern: ${pattern}`,
-        `cyan`,
-        `🌟`
-      )
+    await this._clearAllExistingRoutes()
+    // Cloudflare doesn't handle concurrent requests for patterns so well..
+    for (let pattern of this._routePatterns) {
+      await this._cfMethods.createRoute(pattern)
     }
   }
 
@@ -241,14 +170,11 @@ export default class CloudflareWorkerPlugin {
               script: Buffer.from(code),
               metadata: this._metadata,
             })
+            this._logg(`Success! Cloudflare worker deployed`, `green`, `🚀`)
           } else {
             this._logg(`Skipping Cloudflare worker upload...`, `yellow`)
           }
-
-          if (this._pattern) {
-            await this._upsertPattern()
-          }
-          this._logg(`Success! Cloudflare worker deployed`, `green`, `🚀`)
+          await this._processRoutes()
         } catch (err) {
           this._logg(`${err.message}`, `red`, null)
           throw err
