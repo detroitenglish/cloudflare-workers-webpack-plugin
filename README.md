@@ -33,7 +33,6 @@ plugins: [
       site: `your-site.lol`,
       enabledPatterns: `omg.your-site.lol/*,example.your-site.lol/crazy/pattern/*`,
       disabledPatterns: `example.your-site.lol/crazy/pattern/ignore-me-tho`,
-      clearRoutes: true,
       verbose: true,
       // See 'Configuration' below for additional options
     }
