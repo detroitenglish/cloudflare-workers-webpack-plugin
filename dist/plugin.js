@@ -71,13 +71,17 @@ class CloudflareWorkerPlugin {
       throw new Error(`Config option 'pattern' is not supported in >=2.0.0 - Use 'enabledPatterns' and 'disabledPatterns' instead`);
     }
 
-    this._routePatterns = [...(0, _lib.patternsToArray)(enabledPatterns).map(pattern => ({
-      pattern,
-      enabled: true
-    })), ...(0, _lib.patternsToArray)(disabledPatterns).map(pattern => ({
-      pattern,
-      enabled: false
-    }))];
+    this._routePatterns = [...(0, _lib.patternsToArray)(enabledPatterns).map(pattern => {
+      return !!pattern && {
+        pattern,
+        enabled: true
+      };
+    }).filter(Boolean), ...(0, _lib.patternsToArray)(disabledPatterns).map(pattern => {
+      return !!pattern && {
+        pattern,
+        enabled: false
+      };
+    }).filter(Boolean)];
     this._cfMethods = _objectSpread({}, (0, _lib.cfMethods)(authEmail, authKey, {
       zone
     }));
@@ -117,7 +121,7 @@ class CloudflareWorkerPlugin {
     } = await this._cfMethods.getRoutes();
     if (!existingRoutes.length) return;
 
-    this._logg(`Removing existing routes: ${existingRoutes.map(r => r.pattern).join(', ')}`, `yellow`, `💣`);
+    this._logg(`Clearing all existing routes...}`, `yellow`, `💣`);
 
     await Promise.all(existingRoutes.map(this._cfMethods.deleteRoute));
   }
@@ -126,6 +130,8 @@ class CloudflareWorkerPlugin {
     await this._clearAllExistingRoutes(); // Cloudflare doesn't handle concurrent requests for patterns so well..
 
     for (let pattern of this._routePatterns) {
+      this._logg(`${pattern.enabled ? 'Enabling' : 'Disabling'} worker for route: ${pattern.pattern}`, pattern.enabled ? 'green' : 'yellow', pattern.enabled ? `✔` : '❌');
+
       await this._cfMethods.createRoute(pattern);
     }
   }
@@ -144,7 +150,8 @@ class CloudflareWorkerPlugin {
         let filename, code;
 
         if (this._clearEverything) {
-          return await this._nukeFuckingEverything();
+          await this._nukeFuckingEverything();
+          return this._logg(`Donzo!`, `cyan`, `😎`);
         }
 
         if (!this._skipWorkerUpload) {
@@ -164,6 +171,7 @@ class CloudflareWorkerPlugin {
         }
 
         await this._processRoutes();
+        return this._logg(`Donzo!`, `cyan`, `😎`);
       } catch (err) {
         this._logg(`${err.message}`, `red`, null);
 

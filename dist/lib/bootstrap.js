@@ -43,10 +43,14 @@ function cfMethods(cfMail, cfKey, {
         success: true
       };
     } else {
-      printError(err);
+      let msg = {
+        status: err.response.status,
+        statusText: err.response.statusText,
+        data: err.response.data
+      };
+      printError(msg);
+      throw new Error(JSON.stringify(msg, null, 2));
     }
-
-    throw err;
   });
   return _objectSpread({}, (0, _cfRouteEndpoints.default)(instance), (0, _cfWorkerEndpoints.default)(instance));
 }
