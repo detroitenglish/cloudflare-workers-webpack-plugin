@@ -23,9 +23,14 @@ export function cfMethods(cfMail, cfKey, { zone }) {
       ) {
         return { success: true }
       } else {
-        printError(err)
+        let msg = {
+          status: err.response.status,
+          statusText: err.response.statusText,
+          data: err.response.data,
+        }
+        printError(msg)
+        throw new Error(JSON.stringify(msg, null, 2))
       }
-      throw err
     }
   )
 
