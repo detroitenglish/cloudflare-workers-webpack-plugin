@@ -72,14 +72,26 @@ export default class CloudflareWorkerPlugin {
     }
 
     this._routePatterns = [
-      ...patternsToArray(enabledPatterns).map(pattern => ({
-        pattern,
-        enabled: true,
-      })),
-      ...patternsToArray(disabledPatterns).map(pattern => ({
-        pattern,
-        enabled: false,
-      })),
+      ...patternsToArray(enabledPatterns)
+        .map(pattern => {
+          return (
+            !!pattern && {
+              pattern,
+              enabled: true,
+            }
+          )
+        })
+        .filter(Boolean),
+      ...patternsToArray(disabledPatterns)
+        .map(pattern => {
+          return (
+            !!pattern && {
+              pattern,
+              enabled: false,
+            }
+          )
+        })
+        .filter(Boolean),
     ]
 
     this._cfMethods = {
@@ -123,13 +135,7 @@ export default class CloudflareWorkerPlugin {
   async _clearAllExistingRoutes() {
     let { result: existingRoutes = [] } = await this._cfMethods.getRoutes()
     if (!existingRoutes.length) return
-    this._logg(
-      `Removing existing routes: ${existingRoutes
-        .map(r => r.pattern)
-        .join(', ')}`,
-      `yellow`,
-      `💣`
-    )
+    this._logg(`Clearing all existing routes...}`, `yellow`, `💣`)
     await Promise.all(existingRoutes.map(this._cfMethods.deleteRoute))
   }
 
@@ -137,6 +143,13 @@ export default class CloudflareWorkerPlugin {
     await this._clearAllExistingRoutes()
     // Cloudflare doesn't handle concurrent requests for patterns so well..
     for (let pattern of this._routePatterns) {
+      this._logg(
+        `${pattern.enabled ? 'Enabling' : 'Disabling'} worker for route: ${
+          pattern.pattern
+        }`,
+        pattern.enabled ? 'green' : 'yellow',
+        pattern.enabled ? `✔` : '❌'
+      )
       await this._cfMethods.createRoute(pattern)
     }
   }
@@ -156,7 +169,8 @@ export default class CloudflareWorkerPlugin {
           let filename, code
 
           if (this._clearEverything) {
-            return await this._nukeFuckingEverything()
+            await this._nukeFuckingEverything()
+            return this._logg(`Donzo!`, `cyan`, `😎`)
           }
 
           if (!this._skipWorkerUpload) {
@@ -175,6 +189,8 @@ export default class CloudflareWorkerPlugin {
             this._logg(`Skipping Cloudflare worker upload...`, `yellow`)
           }
           await this._processRoutes()
+
+          return this._logg(`Donzo!`, `cyan`, `😎`)
         } catch (err) {
           this._logg(`${err.message}`, `red`, null)
           throw err
