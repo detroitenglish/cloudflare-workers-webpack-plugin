@@ -1,6 +1,6 @@
 {
   "name": "cloudflare-worker-webpack-plugin",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Launch Cloudflare Workers to the Edge from the comfort of your build step 🚀",
   "main": "dist/index.js",
   "author": "Dave Willenberg <dave@detroit-english.de> (https://github.com/detroitenglish)",
