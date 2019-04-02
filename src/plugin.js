@@ -129,13 +129,13 @@ export default class CloudflareWorkerPlugin {
     const adios = await this._cfMethods.deleteWorker()
     if (adios.ok) this._logg(`Worker script deleted`, `yellow`, `💀`)
     else if (adios.status === 404)
-      this._logg(`No worker script to delete!`, `cyan`, `🤷`)
+      this._logg(`No existing worker to delete!`, `cyan`, `🤷`)
   }
 
   async _clearAllExistingRoutes() {
     let { result: existingRoutes = [] } = await this._cfMethods.getRoutes()
     if (!existingRoutes.length) return
-    this._logg(`Clearing all existing routes...}`, `yellow`, `💣`)
+    this._logg(`Resetting route patterns...`, `yellow`, `💣`)
     await Promise.all(existingRoutes.map(this._cfMethods.deleteRoute))
   }
 
