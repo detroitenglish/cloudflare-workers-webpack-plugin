@@ -1,24 +1,23 @@
 {
-  "name": "cloudflare-worker-webpack-plugin",
+  "name": "cloudflare-workers-webpack-plugin",
   "version": "2.0.3",
   "description": "Launch Cloudflare Workers to the Edge from the comfort of your build step 🚀",
   "main": "dist/index.js",
   "author": "Dave Willenberg <dave@detroit-english.de> (https://github.com/detroitenglish)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/detroitenglish/cloudflare-worker-webpack-plugin"
+    "url": "https://github.com/detroitenglish/cloudflare-workers-webpack-plugin"
   },
   "files": [
     "dist"
   ],
-  "homepage": "https://github.com/detroitenglish/cloudflare-worker-webpack-plugin",
+  "homepage": "https://github.com/detroitenglish/cloudflare-workers-webpack-plugin",
   "repository": {
     "type": "git",
-    "url": "https://github.com/detroitenglish/cloudflare-worker-webpack-plugin.git"
+    "url": "https://github.com/detroitenglish/cloudflare-workers-webpack-plugin.git"
   },
   "scripts": {
-    "lint": "./node_modules/.bin/eslint src .babelrc.js",
-    "precommit": "npm run lint",
+    "lint": "eslint src .babelrc.js",
     "clean": "del-cli dist/*",
     "bundle": "babel src -d dist",
     "build": "npm-run-all -s lint clean bundle"
@@ -41,7 +40,6 @@
     "eslint-config-prettier": "^4.3.0",
     "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-prettier": "^3.1.0",
-    "husky": "^2.3.0",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.17.1"
   },
@@ -52,10 +50,10 @@
     "webpack",
     "plugin",
     "cloudflare",
-    "worker",
+    "workers",
     "serverless",
     "webpack-plugin",
-    "cloudflare-worker"
+    "cloudflare-workers"
   ],
   "engines": {
     "node": ">=8"
