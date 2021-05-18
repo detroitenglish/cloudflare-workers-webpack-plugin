@@ -1,6 +1,7 @@
 import 'colors'
 import FormData from 'form-data'
-export default function(ax) {
+
+export default function(ax, scriptName) {
   return { uploadWorker, deleteWorker }
 
   async function uploadWorker({ script, metadata }) {
@@ -25,7 +26,7 @@ export default function(ax) {
       data = script
     }
     await ax({
-      url: `/workers/script`,
+      url: `/workers/scripts/${scriptName}`,
       method: 'PUT',
       headers,
       data,

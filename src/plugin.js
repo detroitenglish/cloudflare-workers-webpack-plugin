@@ -1,6 +1,7 @@
 import 'colors'
 import fs from 'fs'
 import path from 'path'
+
 import {
   cfMethods,
   validateConfig,
@@ -14,19 +15,20 @@ export default class CloudflareWorkerPlugin {
     authEmail = null,
     authKey = null,
     {
-      script,
-      pattern,
-      metadataPath,
-      enabledPatterns = [],
-      disabledPatterns = [],
-      zone = null,
-      site = null,
-      enabled = true,
-      verbose = false,
       colors = false,
+      disabledPatterns = [],
       emoji = false,
+      enabled = true,
+      enabledPatterns = [],
+      metadataPath,
+      pattern,
       reset = false,
+      script,
+      scriptName = `${Date.now()}`,
+      site = null,
       skipWorkerUpload = false,
+      verbose = false,
+      zone = null,
     }
   ) {
     if (!site) {
@@ -60,6 +62,7 @@ export default class CloudflareWorkerPlugin {
     this._emoji = emoji
     this._skipWorkerUpload = !!skipWorkerUpload
     this._metadata = metadataPath ? fs.readFileSync(metadataPath) : void 0
+    this._scriptName = scriptName
 
     // TODO: process.cwd is probably NOT the best way to handle this... what is?
     this._script =
@@ -77,7 +80,8 @@ export default class CloudflareWorkerPlugin {
           return (
             !!pattern && {
               pattern,
-              enabled: true,
+              script: scriptName,
+              // enabled: true,
             }
           )
         })
@@ -87,7 +91,7 @@ export default class CloudflareWorkerPlugin {
           return (
             !!pattern && {
               pattern,
-              enabled: false,
+              // enabled: false,
             }
           )
         })
@@ -97,6 +101,7 @@ export default class CloudflareWorkerPlugin {
     this._cfMethods = {
       ...cfMethods(authEmail, authKey, {
         zone,
+        scriptName,
       }),
     }
   }
@@ -120,6 +125,7 @@ export default class CloudflareWorkerPlugin {
     Object.assign(this._cfMethods, {
       ...cfMethods(authEmail, authKey, {
         zone,
+        scriptName: this._scriptName,
       }),
     })
   }
@@ -144,11 +150,11 @@ export default class CloudflareWorkerPlugin {
     // Cloudflare doesn't handle concurrent requests for patterns so well..
     for (let pattern of this._routePatterns) {
       this._logg(
-        `${pattern.enabled ? 'Enabling' : 'Disabling'} worker for route: ${
-          pattern.pattern
-        }`,
-        pattern.enabled ? 'green' : 'yellow',
-        pattern.enabled ? `✔` : '❌'
+        `${pattern.script ? 'Enabling' : 'Disabling'} worker script ${
+          pattern.script
+        } for route: ${pattern.pattern}`,
+        pattern.script ? 'green' : 'yellow',
+        pattern.script ? `✔` : '❌'
       )
       await this._cfMethods.createRoute(pattern)
     }
@@ -188,7 +194,7 @@ export default class CloudflareWorkerPlugin {
           } else {
             this._logg(`Skipping Cloudflare worker upload...`, `yellow`)
           }
-          await this._processRoutes()
+          await this._processRoutes() //.catch(console.error.bind(console))
 
           return this._logg(`Donzo!`, `cyan`, `😎`)
         } catch (err) {

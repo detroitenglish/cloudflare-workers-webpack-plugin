@@ -3,7 +3,7 @@ import axios from 'axios'
 import routeEndpoints from './cf-route-endpoints'
 import workerEndpoints from './cf-worker-endpoints'
 
-export function cfMethods(cfMail, cfKey, { zone }) {
+export function cfMethods(cfMail, cfKey, { zone, scriptName }) {
   if (!zone) return void 0
   const instance = axios.create({
     baseURL: `https://api.cloudflare.com/client/v4/zones/${zone}`,
@@ -26,7 +26,7 @@ export function cfMethods(cfMail, cfKey, { zone }) {
         let msg = {
           status: err.response.status,
           statusText: err.response.statusText,
-          data: err.response.data,
+          data: JSON.stringify(err.response.data, null, 2),
         }
         printError(msg)
         throw new Error(JSON.stringify(msg, null, 2))
@@ -36,7 +36,7 @@ export function cfMethods(cfMail, cfKey, { zone }) {
 
   return {
     ...routeEndpoints(instance),
-    ...workerEndpoints(instance),
+    ...workerEndpoints(instance, scriptName),
   }
 }
 

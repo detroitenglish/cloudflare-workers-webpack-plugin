@@ -1,9 +1,9 @@
 import 'colors'
 import axios from 'axios'
-import isDomain from 'is-valid-domain'
+import isHost from 'is-valid-host'
 import { printError } from './bootstrap'
 export async function queryZoneInfo(authEmail, authKey, { site: name }) {
-  if (!isDomain(name))
+  if (!isHost(name))
     throw new Error(`Provided site '${name}' is not a valid FQDN`)
 
   const request = await axios({
