@@ -11,7 +11,7 @@ var _formData = _interopRequireDefault(require("form-data"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _default(ax) {
+function _default(ax, scriptName) {
   return {
     uploadWorker,
     deleteWorker
@@ -30,24 +30,24 @@ function _default(ax) {
 
     if (metadata) {
       form = new _formData.default();
-      form.append('script', script.toString(), {
-        contentType: 'application/javascript'
+      form.append(`script`, script.toString(), {
+        contentType: `application/javascript`
       });
-      form.append('metadata', metadata.toString(), {
-        contentType: 'application/json'
+      form.append(`metadata`, metadata.toString(), {
+        contentType: `application/json`
       });
       headers = form.getHeaders();
       data = form;
     } else {
       headers = {
-        'content-type': 'application/javascript'
+        'content-type': `application/javascript`
       };
       data = script;
     }
 
     await ax({
-      url: `/workers/script`,
-      method: 'PUT',
+      url: `/workers/scripts/${scriptName}`,
+      method: `PUT`,
       headers,
       data
     });
@@ -58,7 +58,7 @@ function _default(ax) {
       success: ok
     } = await ax({
       url: `/workers/script`,
-      method: 'DELETE'
+      method: `DELETE`
     }).catch(err => {
       if (err.sucess) return err;else throw err;
     });

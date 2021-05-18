@@ -16,33 +16,35 @@ function _default(ax) {
 
   async function createRoute({
     pattern,
-    enabled
+    script
   }) {
     await ax({
-      url: `/workers/filters`,
-      method: 'POST',
+      url: `/workers/routes`,
+      method: `POST`,
       headers: {
-        'content-type': 'application/json'
+        'content-type': `application/json`
       },
       data: {
         pattern,
-        enabled
+        script
       }
-    }).catch(() => ({
-      ok: false,
-      pattern
-    }));
+    }).catch(() => {
+      return {
+        ok: false,
+        pattern
+      };
+    });
     return {
       ok: true,
       pattern,
-      enabled
+      script
     };
   }
 
   async function getRoutes() {
     return (await ax({
-      url: `/workers/filters`,
-      method: 'GET'
+      url: `/workers/routes`,
+      method: `GET`
     })) || {};
   }
 
@@ -51,8 +53,8 @@ function _default(ax) {
     pattern
   }) {
     await ax({
-      url: `/workers/filters/${id}`,
-      method: 'DELETE'
+      url: `/workers/routes/${id}`,
+      method: `DELETE`
     }).catch(() => ({
       ok: false,
       pattern

@@ -1,12 +1,12 @@
 import 'colors'
-export default function(ax) {
+export default function (ax) {
   return { createRoute, getRoutes, deleteRoute }
 
   async function createRoute({ pattern, script }) {
     await ax({
       url: `/workers/routes`,
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      method: `POST`,
+      headers: { 'content-type': `application/json` },
       data: { pattern, script },
     }).catch(() => {
       return { ok: false, pattern }
@@ -18,7 +18,7 @@ export default function(ax) {
     return (
       (await ax({
         url: `/workers/routes`,
-        method: 'GET',
+        method: `GET`,
       })) || {}
     )
   }
@@ -26,7 +26,7 @@ export default function(ax) {
   async function deleteRoute({ id, pattern }) {
     await ax({
       url: `/workers/routes/${id}`,
-      method: 'DELETE',
+      method: `DELETE`,
     }).catch(() => ({ ok: false, pattern }))
     return { ok: true, pattern }
   }

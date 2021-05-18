@@ -8,11 +8,11 @@ export async function queryZoneInfo(authEmail, authKey, { site: name }) {
 
   const request = await axios({
     url: `https://api.cloudflare.com/client/v4/zones`,
-    method: 'GET',
+    method: `GET`,
     headers: {
       'x-auth-email': authEmail,
       'x-auth-key': authKey,
-      'content-type': 'application/json',
+      'content-type': `application/json`,
     },
     params: { name },
   })

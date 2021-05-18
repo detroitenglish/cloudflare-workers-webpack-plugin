@@ -9,7 +9,7 @@ require("colors");
 
 var _axios = _interopRequireDefault(require("axios"));
 
-var _isValidDomain = _interopRequireDefault(require("is-valid-domain"));
+var _isValidHost = _interopRequireDefault(require("is-valid-host"));
 
 var _bootstrap = require("./bootstrap");
 
@@ -18,14 +18,14 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 async function queryZoneInfo(authEmail, authKey, {
   site: name
 }) {
-  if (!(0, _isValidDomain.default)(name)) throw new Error(`Provided site '${name}' is not a valid FQDN`);
+  if (!(0, _isValidHost.default)(name)) throw new Error(`Provided site '${name}' is not a valid FQDN`);
   const request = await (0, _axios.default)({
     url: `https://api.cloudflare.com/client/v4/zones`,
-    method: 'GET',
+    method: `GET`,
     headers: {
       'x-auth-email': authEmail,
       'x-auth-key': authKey,
-      'content-type': 'application/json'
+      'content-type': `application/json`
     },
     params: {
       name

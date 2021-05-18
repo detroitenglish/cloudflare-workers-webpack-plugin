@@ -150,11 +150,11 @@ export default class CloudflareWorkerPlugin {
     // Cloudflare doesn't handle concurrent requests for patterns so well..
     for (let pattern of this._routePatterns) {
       this._logg(
-        `${pattern.script ? 'Enabling' : 'Disabling'} worker script ${
+        `${pattern.script ? `Enabling` : `Disabling`} worker script ${
           pattern.script
         } for route: ${pattern.pattern}`,
-        pattern.script ? 'green' : 'yellow',
-        pattern.script ? `✔` : '❌'
+        pattern.script ? `green` : `yellow`,
+        pattern.script ? `✔` : `❌`
       )
       await this._cfMethods.createRoute(pattern)
     }
@@ -162,7 +162,7 @@ export default class CloudflareWorkerPlugin {
 
   apply(compiler) {
     return compiler.hooks.afterEmit.tapPromise(
-      'CloudflareWorkerPlugin',
+      `CloudflareWorkerPlugin`,
       async compilation => {
         if (!this._enabled)
           return this._logg(`Cloudflare deployment disabled.`, `yellow`)

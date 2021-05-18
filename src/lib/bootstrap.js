@@ -18,7 +18,7 @@ export function cfMethods(cfMail, cfKey, { zone, scriptName }) {
     err => {
       if (
         err.response &&
-        err.response.config.method === 'delete' &&
+        err.response.config.method === `delete` &&
         err.response.status === 404
       ) {
         return { success: true }
@@ -69,18 +69,18 @@ export function validateConfig([
     if (!value) {
       throw new Error(`'${key}' is undefined`)
     }
-    if (typeof value !== 'string') {
+    if (typeof value !== `string`) {
       throw new Error(`'${key}' is not a string`)
     }
   }
 
-  if (script && typeof script !== 'string')
+  if (script && typeof script !== `string`)
     throw new Error(`'script' is not a string`)
 
   if (pattern) {
-    if (Array.isArray(pattern) && !pattern.every(p => typeof p === 'string')) {
+    if (Array.isArray(pattern) && !pattern.every(p => typeof p === `string`)) {
       throw new Error(`'pattern' must be a string or array of strings`)
-    } else if (typeof pattern !== 'string') {
+    } else if (typeof pattern !== `string`) {
       throw new Error(`'pattern' must be a string or array of strings`)
     }
   }
@@ -89,7 +89,7 @@ export function validateConfig([
 export function logg(
   stuff,
   color = `cyan`,
-  emoji = color === `yellow` ? `⚠` : '👍'
+  emoji = color === `yellow` ? `⚠` : `👍`
 ) {
   if (!this._verbose) return void 0
 
@@ -101,7 +101,7 @@ export function logg(
   let text = emoji ? `${emoji}  | ` : ``
 
   switch (typeof stuff) {
-    case 'object':
+    case `object`:
       text += color
         ? `${JSON.stringify(stuff, null, 2)}`[color]
         : `${JSON.stringify(stuff, null, 2)}`
@@ -114,5 +114,5 @@ export function logg(
 }
 
 export function patternsToArray(patterns) {
-  return Array.isArray(patterns) ? patterns : patterns.split(',')
+  return Array.isArray(patterns) ? patterns : patterns.split(`,`)
 }

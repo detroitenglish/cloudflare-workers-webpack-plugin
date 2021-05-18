@@ -1,11 +1,11 @@
 "use strict";
 
-require("core-js/modules/es.array.iterator");
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
+
+require("core-js/modules/es.array.iterator.js");
 
 require("colors");
 
@@ -17,25 +17,28 @@ var _lib = require("./lib");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; var ownKeys = Object.keys(source); if (typeof Object.getOwnPropertySymbols === 'function') { ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) { return Object.getOwnPropertyDescriptor(source, sym).enumerable; })); } ownKeys.forEach(function (key) { _defineProperty(target, key, source[key]); }); } return target; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 class CloudflareWorkerPlugin {
   constructor(authEmail = null, authKey = null, {
-    script,
-    pattern,
-    metadataPath,
-    enabledPatterns = [],
-    disabledPatterns = [],
-    zone = null,
-    site = null,
-    enabled = true,
-    verbose = false,
     colors = false,
+    disabledPatterns = [],
     emoji = false,
+    enabled = true,
+    enabledPatterns = [],
+    metadataPath,
+    pattern,
     reset = false,
-    skipWorkerUpload = false
+    script,
+    scriptName = `${Date.now()}`,
+    site = null,
+    skipWorkerUpload = false,
+    verbose = false,
+    zone = null
   }) {
     if (!site) {
       (0, _lib.validateConfig)(arguments);
@@ -49,7 +52,7 @@ class CloudflareWorkerPlugin {
       this._validate = () => {
         const creds = this._credentials.splice(0, 2);
 
-        const opts = _objectSpread({}, this._configOptions, {
+        const opts = _objectSpread(_objectSpread({}, this._configOptions), {}, {
           zone: this._zone
         });
 
@@ -65,7 +68,8 @@ class CloudflareWorkerPlugin {
     this._colors = colors;
     this._emoji = emoji;
     this._skipWorkerUpload = !!skipWorkerUpload;
-    this._metadata = metadataPath ? _fs.default.readFileSync(metadataPath) : void 0; // TODO: process.cwd is probably NOT the best way to handle this... what is?
+    this._metadata = metadataPath ? _fs.default.readFileSync(metadataPath) : void 0;
+    this._scriptName = scriptName; // TODO: process.cwd is probably NOT the best way to handle this... what is?
 
     this._script = script && enabled ? _path.default.normalize(`${process.cwd()}/${script}`) : void 0;
 
@@ -76,16 +80,18 @@ class CloudflareWorkerPlugin {
     this._routePatterns = [...(0, _lib.patternsToArray)(enabledPatterns).map(pattern => {
       return !!pattern && {
         pattern,
-        enabled: true
+        script: scriptName // enabled: true,
+
       };
     }).filter(Boolean), ...(0, _lib.patternsToArray)(disabledPatterns).map(pattern => {
       return !!pattern && {
-        pattern,
-        enabled: false
+        pattern // enabled: false,
+
       };
     }).filter(Boolean)];
     this._cfMethods = _objectSpread({}, (0, _lib.cfMethods)(authEmail, authKey, {
-      zone
+      zone,
+      scriptName
     }));
   }
 
@@ -107,7 +113,8 @@ class CloudflareWorkerPlugin {
     this._validate();
 
     Object.assign(this._cfMethods, _objectSpread({}, (0, _lib.cfMethods)(authEmail, authKey, {
-      zone
+      zone,
+      scriptName: this._scriptName
     })));
   }
 
@@ -132,14 +139,14 @@ class CloudflareWorkerPlugin {
     await this._clearAllExistingRoutes(); // Cloudflare doesn't handle concurrent requests for patterns so well..
 
     for (let pattern of this._routePatterns) {
-      this._logg(`${pattern.enabled ? 'Enabling' : 'Disabling'} worker for route: ${pattern.pattern}`, pattern.enabled ? 'green' : 'yellow', pattern.enabled ? `✔` : '❌');
+      this._logg(`${pattern.script ? `Enabling` : `Disabling`} worker script ${pattern.script} for route: ${pattern.pattern}`, pattern.script ? `green` : `yellow`, pattern.script ? `✔` : `❌`);
 
       await this._cfMethods.createRoute(pattern);
     }
   }
 
   apply(compiler) {
-    return compiler.hooks.afterEmit.tapPromise('CloudflareWorkerPlugin', async compilation => {
+    return compiler.hooks.afterEmit.tapPromise(`CloudflareWorkerPlugin`, async compilation => {
       if (!this._enabled) return this._logg(`Cloudflare deployment disabled.`, `yellow`);
 
       if (this._deferValidation) {
@@ -172,7 +179,8 @@ class CloudflareWorkerPlugin {
           this._logg(`Skipping Cloudflare worker upload...`, `yellow`);
         }
 
-        await this._processRoutes();
+        await this._processRoutes(); //.catch(console.error.bind(console))
+
         return this._logg(`Donzo!`, `cyan`, `😎`);
       } catch (err) {
         this._logg(`${err.message}`, `red`, null);
