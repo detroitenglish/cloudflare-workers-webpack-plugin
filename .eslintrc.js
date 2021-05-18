@@ -1,29 +1,37 @@
 module.exports = {
-  env: {
-    es6: true,
-    node: true,
-  },
-  extends: ['eslint:recommended', 'plugin:prettier/recommended'],
-  parser: 'babel-eslint',
-  parserOptions: {
-    allowImportExportEverywhere: true,
-    ecmaVersion: 9,
-    parser: 'babel-eslint',
-    sourceType: 'module',
-  },
-  plugins: ['prettier', 'babel'],
   root: true,
+  parserOptions: {
+    ecmaVersion: 9,
+    sourceType: `module`,
+    allowImportExportEverywhere: true,
+    babelOptions: {
+      configFile: `${__dirname}/.babelrc.js`,
+    },
+  },
+  env: {
+    node: true,
+    es6: true,
+  },
+  parser: `@babel/eslint-parser`,
+  extends: [`eslint:recommended`, `plugin:prettier/recommended`],
   rules: {
-    'no-console': 'off',
-    'no-useless-escape': 'warn',
-    'no-var': 'error',
+    'babel/no-invalid-this': 0,
+    'babel/no-unused-expressions': 0,
+    'babel/valid-typeof': 0,
+    'no-console': 0,
+    'no-empty': `off`,
+    'no-var': `error`,
+    'prefer-template': `error`,
+    quotes: [`warn`, `backtick`],
+    eqeqeq: `error`,
+    strict: `error`,
+    'require-await': `error`,
     'prettier/prettier': [
-      'error',
+      `warn`,
       {},
       {
         usePrettierrc: true,
       },
     ],
-    'require-await': 'error',
   },
 }

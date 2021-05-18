@@ -1,0 +1,8 @@
+{
+  "ignore": {
+    "webpack": {
+      "versions": ">=5",
+      "reason": "Breaks stuff"
+    }
+  }
+}
