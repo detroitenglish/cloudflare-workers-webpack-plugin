@@ -1,16 +1,16 @@
 module.exports = {
   presets: [
     [
-      '@babel/preset-env',
+      `@babel/preset-env`,
       {
-        useBuiltIns: 'usage',
-        modules: 'commonjs',
+        useBuiltIns: `usage`,
+        modules: `commonjs`,
         corejs: 3,
         targets: {
-          node: '8',
+          node: `8`,
         },
         debug: !!process.env.DEBUG,
-        exclude: ['es.promise'],
+        exclude: [`es.promise`],
       },
     ],
   ],

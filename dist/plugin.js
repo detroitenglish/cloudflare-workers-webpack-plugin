@@ -130,7 +130,7 @@ class CloudflareWorkerPlugin {
     } = await this._cfMethods.getRoutes();
     if (!existingRoutes.length) return;
 
-    this._logg(`Resetting route patterns...`, `yellow`, `💣`);
+    this._logg(`Nuking script and route pattern...`, `yellow`, `💣`);
 
     await Promise.all(existingRoutes.map(this._cfMethods.deleteRoute));
   }
