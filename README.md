@@ -1,4 +1,4 @@
-# Cloudflare Worker Webpack Plugin
+# Cloudflare Workers Webpack Plugin
 
 Deploy freshly-bundled Cloudflare Worker scripts and route matching patterns **directly from your build step** 🚀
 
@@ -11,13 +11,13 @@ Deploy freshly-bundled Cloudflare Worker scripts and route matching patterns **d
 Install, ...
 
 ```bash
-npm install -D cloudflare-worker-webpack-plugin
+npm install -D cloudflare-workers-webpack-plugin
 ```
 
 ... require...
 
 ```javascript
-const CloudflareWorkerPlugin = require('cloudflare-worker-webpack-plugin')
+const CloudflareWorkerPlugin = require('cloudflare-workers-webpack-plugin')
 ```
 
 ... and include the plugin in your webpack ~~dark arts~~ configuration:
